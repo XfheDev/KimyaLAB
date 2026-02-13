@@ -12,9 +12,9 @@ export async function GET() {
         }
 
         const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { name: true, points: true, level: true, streak: true },
-        });
+            where: { id: session.user.id } as any,
+            select: { name: true, points: true, level: true, streak: true } as any,
+        }) as any;
 
         console.log("Stats API - Session ID:", session.user.id);
         console.log("Stats API - Fetched User:", user?.name, user?.points);
@@ -57,7 +57,7 @@ export async function GET() {
             count: stat._count._all,
         }));
 
-        const achievements = await prisma.achievement.findMany({
+        const achievements = await (prisma as any).achievement.findMany({
             where: { userId: session.user.id },
             orderBy: { unlockedAt: "desc" },
         });

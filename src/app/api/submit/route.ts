@@ -17,8 +17,8 @@ export async function POST(req: Request) {
         const pointsEarned = score * 10;
 
         const user = await prisma.user.findUnique({
-            where: { id: session.user.id }
-        });
+            where: { id: session.user.id } as any
+        }) as any;
 
         if (!user) throw new Error("User not found");
 
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         // If diffDays is 0, streak remains the same
 
         // Update user and create attempt
-        const [attempt] = await prisma.$transaction([
+        const [attempt, updatedUser] = await prisma.$transaction([
             prisma.attempt.create({
                 data: {
                     userId: session.user.id,
@@ -66,11 +66,15 @@ export async function POST(req: Request) {
                     level: newLevel,
                     streak: newStreak,
                     lastActivity: now
-                }
+                } as any
             })
-        ]);
+        ]) as any;
 
-        return NextResponse.json({ attempt }, { status: 201 });
+        return NextResponse.json({
+            attempt,
+            streak: newStreak,
+            pointsEarned
+        }, { status: 201 });
     } catch (error) {
         console.error("Submission error:", error);
         return NextResponse.json(
