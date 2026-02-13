@@ -5,8 +5,9 @@ import fs from "fs";
 import path from "path";
 
 const url = process.env.DATABASE_URL || "file:./dev.db";
-const libsql = createClient({ url });
-const adapter = new PrismaLibSql({ url });
+const authToken = process.env.TURSO_AUTH_TOKEN;
+const libsql = createClient({ url, authToken });
+const adapter = new PrismaLibSql({ url, authToken });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
