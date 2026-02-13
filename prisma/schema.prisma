@@ -1,0 +1,62 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  engineType      = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  name         String?
+  points       Int           @default(0)
+  level        Int           @default(1)
+  streak       Int           @default(0)
+  lastActivity DateTime      @default(now())
+  attempts     Attempt[]
+  achievements Achievement[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  type        String // e.g., "MOLE_MASTER", "FIRST_QUIZ"
+  name        String
+  description String?
+  unlockedAt  DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Subject {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  questions Question[]
+  attempts  Attempt[]
+}
+
+model Question {
+  id             String   @id @default(cuid())
+  text           String
+  options        String // JSON string of array
+  correctOption  Int // 0-based index
+  subjectId      String
+  subject        Subject  @relation(fields: [subjectId], references: [id])
+}
+
+model Attempt {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  score     Int
+  correct   Int
+  wrong     Int
+  date      DateTime @default(now())
+}
