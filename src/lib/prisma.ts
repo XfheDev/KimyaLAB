@@ -3,69 +3,40 @@ import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
 /**
- * 🔒 ROBUST STASH & MASK STRATEGY
+ * Prisma Client Initialization (Restored to Working State)
  * 
- * Problem: 
- * 1. Prisma Engine needs 'file:' URL (to match schema provider="sqlite").
- * 2. Adapter needs 'libsql:' URL (to connect to Turso).
- * 3. Vercel/Lambda reuses containers, so modifying process.env persists.
- * 
- * Solution:
- * 1. Check a stash variable first.
- * 2. If valid URL found in DATABASE_URL, stash it.
- * 3. Mask DATABASE_URL with dummy file for the engine.
- * 4. Pass real stashed URL to Adapter.
+ * Logic:
+ * 1. Schema has NO 'url' property (Fixes P1012).
+ * 2. Adapter handles connection.
+ * 3. We detect Env Vars robustly.
  */
 
-const setupEnvironment = () => {
-    // 1. Try to recover from stash first
-    let realUrl = process.env._PRISMA_STASHED_URL || process.env.TURSO_DATABASE_URL || process.env.TURSO_DB_URL || process.env.DATABASE_URL;
-
-    // 2. Identify if we have a valid remote URL
-    const isRemote = realUrl?.startsWith("libsql://") || realUrl?.startsWith("https://");
-
-    if (isRemote && realUrl) {
-        // Stash it for future warm-starts
-        process.env._PRISMA_STASHED_URL = realUrl;
-
-        // 3. Mask the public variable for Prisma Engine validation
-        if (process.env.DATABASE_URL !== "file:./dev.db") {
-            console.error(`🏗️ [PRISMA] Stashing real URL and masking DATABASE_URL.`);
-            process.env.DATABASE_URL = "file:./dev.db";
-        }
-    } else {
-        console.error(`🏗️ [PRISMA] No remote URL found or already masked without stash. URL: ${realUrl?.substring(0, 10)}...`);
-    }
-
-    return {
-        url: realUrl,
-        token: process.env.TURSO_AUTH_TOKEN
-    };
-};
-
 const prismaClientSingleton = () => {
-    const { url, token } = setupEnvironment();
+    // 1. Get credentials
+    const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
+    const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    // If we have a remote URL, use the adapter
-    if (url && (url.startsWith("libsql://") || url.startsWith("https://"))) {
-        const adapterUrl = url.startsWith("https://") ? url.replace("https://", "libsql://") : url;
+    console.error(`🏗️ [PRISMA INIT] Starting...`);
 
-        console.error(`🏗️ [PRISMA] Connecting Adapter to: ${adapterUrl.substring(0, 20)}...`);
+    // 2. Prepare adapter URL (must be libsql:// or https://)
+    const adapterUrl = url.startsWith("file:") ? "file:./dev.db" : (
+        url.startsWith("https://") ? url.replace("https://", "libsql://") : url
+    );
 
-        const client = createClient({
-            url: adapterUrl,
-            authToken: token,
-        });
+    console.error(`🏗️ [PRISMA INIT] Adapter URL: ${adapterUrl.substring(0, 15)}... | Token: ${!!authToken}`);
 
-        const adapter = new PrismaLibSql(client as any);
+    // 3. Create LibSQL Client
+    const client = createClient({
+        url: adapterUrl,
+        authToken: authToken,
+    });
 
-        // 4. Instantiate Prisma Client
-        // We pass the adapter. The engine will use the masked process.env.DATABASE_URL
-        // because we restored 'url = env("DATABASE_URL")' in schema.prisma.
-        return new PrismaClient({ adapter });
-    }
+    // 4. Create Adapter
+    const adapter = new PrismaLibSql(client as any);
 
-    return new PrismaClient();
+    // 5. Instantiate Prisma Client
+    // We rely purely on the adapter.
+    return new PrismaClient({ adapter });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
