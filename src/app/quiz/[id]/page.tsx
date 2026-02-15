@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import QuizSession from "@/components/QuizSession";
 import { notFound } from "next/navigation";
@@ -10,6 +11,8 @@ export default async function QuizPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
+    const session = await auth();
+
     const subject = await prisma.subject.findUnique({
         where: { id },
         include: {
@@ -18,6 +21,18 @@ export default async function QuizPage({
     });
 
     if (!subject) notFound();
+
+    // Fetch saved questions for current user
+    let savedIds: string[] = [];
+    if (session?.user?.email) {
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            include: { savedQuestions: true }
+        });
+        if (user) {
+            savedIds = user.savedQuestions.map(sq => sq.questionId);
+        }
+    }
 
     // Pick 10 random questions or more if available
     const questions = (subject.questions as any[])
@@ -34,6 +49,7 @@ export default async function QuizPage({
                 questions={questions}
                 subjectId={subject.id}
                 subjectName={subject.name}
+                initialSavedIds={savedIds}
             />
         </div>
     );

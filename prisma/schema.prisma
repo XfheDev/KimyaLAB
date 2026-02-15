@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -20,6 +21,7 @@ model User {
   achievements Achievement[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  savedQuestions SavedQuestion[]
 }
 
 model Achievement {
@@ -46,6 +48,7 @@ model Question {
   correctOption  Int // 0-based index
   subjectId      String
   subject        Subject  @relation(fields: [subjectId], references: [id])
+  savedBy        SavedQuestion[]
 }
 
 model Attempt {
@@ -58,4 +61,15 @@ model Attempt {
   correct   Int
   wrong     Int
   date      DateTime @default(now())
+}
+
+model SavedQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, questionId])
 }

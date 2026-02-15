@@ -1,7 +1,8 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { BookOpen, LogOut, Award, Star } from "lucide-react";
+import { BookOpen, LogOut, Award, Star, Settings, Bookmark } from "lucide-react";
+import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { motion } from "framer-motion";
 
@@ -57,12 +58,19 @@ export default function Navbar({ user }: NavbarProps) {
 
                         <div className="flex items-center gap-3">
                             <span className="hidden sm:block text-sm text-foreground/60 font-medium">
-                                {user.name}
+                                {user.name || "Kullanıcı"}
                             </span>
+                            <Link href="/saved" className="p-2 text-foreground/40 hover:text-primary transition-colors" title="Kaydedilenler">
+                                <Bookmark className="h-5 w-5" />
+                            </Link>
+                            <Link href="/settings" className="p-2 text-foreground/40 hover:text-primary transition-colors" title="Ayarlar">
+                                <Settings className="h-5 w-5" />
+                            </Link>
                             <ThemeToggle />
                             <button
                                 onClick={() => signOut()}
                                 className="p-2 text-foreground/40 hover:text-red-500 transition-colors"
+                                title="Çıkış Yap"
                             >
                                 <LogOut className="h-5 w-5" />
                             </button>
