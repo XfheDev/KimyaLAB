@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { BookOpen, LogOut, Award, Star, Settings, Bookmark, Menu, X } from "lucide-react";
+import { BookOpen, LogOut, Award, Star, Settings, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
@@ -64,9 +64,6 @@ export default function Navbar({ user }: NavbarProps) {
                                 {user.name || "Kullanıcı"}
                             </span>
                             <div className="hidden sm:flex items-center gap-1">
-                                <Link href="/saved" className="p-2 text-foreground/40 hover:text-primary transition-colors" title="Kaydedilenler">
-                                    <Bookmark className="h-5 w-5" />
-                                </Link>
                                 <Link href="/settings" className="p-2 text-foreground/40 hover:text-primary transition-colors" title="Ayarlar">
                                     <Settings className="h-5 w-5" />
                                 </Link>
@@ -127,15 +124,7 @@ export default function Navbar({ user }: NavbarProps) {
                             </div>
 
                             {/* Mobile Links */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <Link
-                                    href="/saved"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 p-4 rounded-xl bg-foreground/5 active:bg-foreground/10 transition-colors"
-                                >
-                                    <Bookmark className="h-5 w-5 text-primary" />
-                                    <span className="font-bold text-foreground">Kaydedilenler</span>
-                                </Link>
+                            <div className="grid grid-cols-1 gap-3">
                                 <Link
                                     href="/settings"
                                     onClick={() => setIsMenuOpen(false)}
