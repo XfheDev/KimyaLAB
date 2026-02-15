@@ -2,49 +2,41 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-const prismaClientSingleton = () => {
-    // Try to find the DB URL from any possible key
-    const keys = ['DATABASE_URL', 'TURSO_DATABASE_URL', 'TURSO_DB_URL', 'NEXT_PUBLIC_DATABASE_URL'];
-    let rawUrl: string | undefined;
-    let foundKey: string | undefined;
+/**
+ * Hyper-defensive Prisma Client Initialization.
+ * Solves "URL_INVALID: The URL 'undefined'" by ensuring the environment
+ * is totally clean before Prisma's engine touches it.
+ */
 
+const getValidDbUrl = () => {
+    const keys = ['TURSO_DATABASE_URL', 'TURSO_DB_URL', 'DATABASE_URL'];
     for (const key of keys) {
         const val = process.env[key];
-        if (val && val !== "undefined" && val.trim() !== "") {
-            rawUrl = val;
-            foundKey = key;
-            break;
+        if (val && val !== "undefined" && val.trim().length > 0) {
+            // Normalize https to libsql for adapter
+            return val.startsWith("https://") ? val.replace("https://", "libsql://") : val;
         }
     }
+    return "file:./dev.db"; // Safe local fallback for build/init
+};
 
-    const authToken = process.env.TURSO_AUTH_TOKEN || process.env.TURSO_DB_AUTH_TOKEN;
+const prismaClientSingleton = () => {
+    const url = getValidDbUrl();
+    const token = process.env.TURSO_AUTH_TOKEN || undefined;
 
-    console.error(`🔍 DB SEARCH: Found ${foundKey ? foundKey : 'NONE'} [Keys checked: ${keys.join(', ')}]`);
+    console.error(`🏗️ [PRISMA INIT] URL: ${url.substring(0, 20)}... | Token: ${!!token}`);
 
-    if (!rawUrl) {
-        console.error("❌ CRITICAL: No valid Database URL found in environment variables!");
-        return new PrismaClient(); // This will fail later but avoids crash here
-    }
+    // CRITICAL: We override process.env.DATABASE_URL because Prisma's 
+    // hidden engine looks at it even when an adapter is provided.
+    process.env.DATABASE_URL = url;
 
-    // Normalize for LibSQL
-    const normalizedUrl = rawUrl.startsWith("https://")
-        ? rawUrl.replace("https://", "libsql://")
-        : rawUrl;
+    const client = createClient({
+        url: url,
+        authToken: token,
+    });
 
-    console.error(`🏗️ Prisma Init - Key: ${foundKey}, URL: ${normalizedUrl.substring(0, 15)}... , Token: ${!!authToken}`);
-
-    try {
-        const client = createClient({
-            url: normalizedUrl,
-            authToken: authToken,
-        });
-
-        const adapter = new PrismaLibSql(client as any);
-        return new PrismaClient({ adapter });
-    } catch (e) {
-        console.error("❌ FAILED to create LibSQL client:", e);
-        return new PrismaClient();
-    }
+    const adapter = new PrismaLibSql(client as any);
+    return new PrismaClient({ adapter });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;

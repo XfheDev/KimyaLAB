@@ -4,34 +4,36 @@ import { NextResponse } from "next/server";
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    console.error("🔍 DB DIAGNOSTIC START");
+    const diag: any = {
+        timestamp: new Date().toISOString(),
+        env: {}
+    };
+
+    // Safely collect environment info
+    const keysToCheck = ['DATABASE_URL', 'TURSO_DATABASE_URL', 'TURSO_DB_URL', 'TURSO_AUTH_TOKEN', 'NODE_ENV'];
+    keysToCheck.forEach(key => {
+        const val = process.env[key];
+        diag.env[key] = {
+            exists: val !== undefined,
+            type: typeof val,
+            length: val?.length || 0,
+            is_undefined_string: val === "undefined",
+            preview: val ? (val.substring(0, 10) + "...") : null
+        };
+    });
+
+    console.error("🔍 DB DIAGNOSTIC START", JSON.stringify(diag, null, 2));
+
     try {
-        // Log environment keys (no values for security)
-        const keys = Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO") || k.includes("URL"));
-        console.error("🔍 DB DIAGNOSTIC - Env Keys:", keys);
-
-        // Test simple query
         const count = await prisma.user.count();
-        console.error("🔍 DB DIAGNOSTIC SUCCESS - User count:", count);
-
-        // Find which key is actually set in env
-        const activeKey = ['DATABASE_URL', 'TURSO_DATABASE_URL', 'TURSO_DB_URL'].find(k => process.env[k] && process.env[k] !== "undefined");
-
-        return NextResponse.json({
-            status: "success",
-            count,
-            activeKey,
-            nodeVersion: process.version,
-        });
+        return NextResponse.json({ status: "success", count, diag });
     } catch (error: any) {
         console.error("🔍 DB DIAGNOSTIC FAILED:", error);
         return NextResponse.json({
             status: "error",
             message: error.message,
             code: error.code,
-            meta: error.meta,
-            stack: error.stack,
-            envKeysFound: Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO"))
+            diag
         }, { status: 500 });
     }
 }
