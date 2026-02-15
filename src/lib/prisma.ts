@@ -7,6 +7,10 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const url = process.env.DATABASE_URL || "file:./dev.db";
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
+if (!authToken) {
+    console.error("⚠️ TURSO_AUTH_TOKEN is missing in environment variables!");
+}
+
 const libsql = createClient({
     url,
     authToken
