@@ -2,39 +2,40 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-/**
- * Prisma Client Initialization
- * Using Prisma 7 + LibSQL Adapter for Turso
- */
-
 const prismaClientSingleton = () => {
-    // 1. Get credentials
-    const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
+    // 1. Capture the REAL connection string from environment
+    // We check multiple keys to be comprehensive
+    const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.TURSO_DB_URL || process.env.DATABASE_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    console.error(`🏗️ [PRISMA INIT] Starting...`);
+    console.error(`🏗️ [PRISMA] Real URL found: ${!!tursoUrl} | Token found: ${!!authToken}`);
 
-    // 2. Prepare adapter URL (must be libsql:// or https://)
-    // If it's a file path, we might be in local dev without Turso
-    const adapterUrl = url.startsWith("file:") ? "file:./dev.db" : (
-        url.startsWith("https://") ? url.replace("https://", "libsql://") : url
-    );
+    // If we have a URL, we want to use the Adapter (LibSQL)
+    if (tursoUrl) {
+        // 2. Normalize to libsql:// for the adapter
+        const adapterUrl = tursoUrl.startsWith("https://")
+            ? tursoUrl.replace("https://", "libsql://")
+            : tursoUrl;
 
-    console.error(`🏗️ [PRISMA INIT] Adapter URL: ${adapterUrl.substring(0, 15)}... | Token: ${!!authToken}`);
+        // 3. CRITICAL HACK: Overwrite DATABASE_URL with a dummy file path
+        // This satisfies Prisma's internal engine which expects a 'file:' URL for 'provider = "sqlite"'
+        // The engine validation runs against process.env.DATABASE_URL even if an adapter is provided!
+        process.env.DATABASE_URL = "file:./dev.db";
 
-    // 3. Create LibSQL Client
-    const client = createClient({
-        url: adapterUrl,
-        authToken: authToken,
-    });
+        console.error(`🏗️ [PRISMA] Masking DATABASE_URL as 'file:./dev.db' for engine validation.`);
 
-    // 4. Create Adapter
-    const adapter = new PrismaLibSql(client as any);
+        const client = createClient({
+            url: adapterUrl,
+            authToken: authToken,
+        });
 
-    // 5. Instantiate Prisma Client
-    // With an adapter, we SHOULD NOT need to pass datasourceUrl.
-    // We rely on the adapter to handle communication.
-    return new PrismaClient({ adapter });
+        const adapter = new PrismaLibSql(client as any);
+
+        return new PrismaClient({ adapter });
+    }
+
+    // Fallback for purely local dev if no env vars are set
+    return new PrismaClient();
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
