@@ -14,14 +14,26 @@ try {
     if (process.env.NODE_ENV === "production") {
         if (!url || !authToken) {
             console.error("❌ CRITICAL ERROR: DATABASE_URL or TURSO_AUTH_TOKEN is missing in production!");
+            console.log("DEBUG - env keys:", Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO")));
             // We initiate a dummy client or throw to prevent silent failures, 
             // but throwing here might crash the build if not handled.
             // However, for runtime, we need these.
+        } else {
+            console.log("✅ Database URL length:", url.length);
+            console.log("✅ Database URL protocol:", url.split(":")[0]);
+            console.log("✅ Database URL starts with:", url.substring(0, 10));
+            // console.log("✅ Auth Token status: Present"); // This log is replaced by more detailed ones
         }
 
+        // Ensure we handle the string "undefined" which can happen in some environments
+        const finalUrl = (url && url !== "undefined") ? url : "file:./dev.db";
+        const finalToken = (authToken && authToken !== "undefined") ? authToken : undefined;
+
+        console.log("🚀 Initializing LibSQL with URL:", finalUrl.substring(0, 15) + "...");
+
         const libsql = createClient({
-            url: url || "file:./dev.db", // Fallback only to prevent immediate crash, though it won't work for real queries if url is missing
-            authToken
+            url: finalUrl, // Fallback only to prevent immediate crash, though it won't work for real queries if url is missing
+            authToken: finalToken
         });
 
         const adapter = new PrismaLibSql(libsql as any);

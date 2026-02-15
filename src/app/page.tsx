@@ -24,7 +24,11 @@ export default function Dashboard() {
         const subjectsRes = await fetch("/api/subjects");
         const subjects = await subjectsRes.json();
 
-        setData({ stats, subjects, user: stats.user });
+        setData({
+          stats,
+          subjects: Array.isArray(subjects) ? subjects : [],
+          user: stats?.user
+        });
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       } finally {
