@@ -2,45 +2,43 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-// Global singleton to prevent multiple instances in development and serverless
 const prismaClientSingleton = () => {
     const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    // Use a fallback for build time/initialization, but real queries will fail if URL is missing
-    const finalUrl = (url && url !== "undefined") ? url : "file:./dev.db";
+    if (!url || url === "undefined") {
+        console.error("❌ DATABASE_URL is missing or undefined");
+        return new PrismaClient();
+    }
 
-    // Normalize https to libsql for the adapter
-    const normalizedUrl = finalUrl.startsWith("https://")
-        ? finalUrl.replace("https://", "libsql://")
-        : finalUrl;
+    // Normalizing URL for LibSQL
+    const normalizedUrl = url.replace("https://", "libsql://");
 
-    console.error(`🏗️ Prisma Init - Protocol: ${normalizedUrl.split(':')[0]}, URL Length: ${normalizedUrl.length}`);
+    console.error(`🏗️ Prisma Init - URL: ${normalizedUrl.substring(0, 20)}...`);
 
-    // Create LibSQL client
     const client = createClient({
         url: normalizedUrl,
         authToken: authToken,
     });
 
-    // Create Prisma adapter for LibSQL
     const adapter = new PrismaLibSql(client as any);
 
-    // Initialize Prisma Client
-    // Prisma 7 uses 'datasourceUrl' (singular) to override the connection string
-    // We use 'as any' to avoid TypeScript 'never' error in some configurations
-    return new PrismaClient({
-        adapter,
-        datasourceUrl: normalizedUrl
-    } as any);
+    // In Prisma 7, when using an adapter, we purely rely on the adapter for the connection.
+    // The internal engine still reads DATABASE_URL from the environment.
+    // We ensure it's set to something valid if it's not already.
+    if (process.env.DATABASE_URL !== normalizedUrl) {
+        process.env.DATABASE_URL = normalizedUrl;
+    }
+
+    return new PrismaClient({ adapter });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
 
 const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClientSingleton | undefined;
+    prisma: PrismaClient | undefined;
 };
 
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = (prisma as any);
