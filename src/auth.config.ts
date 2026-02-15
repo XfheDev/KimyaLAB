@@ -15,6 +15,10 @@ export const authConfig = {
             } else if (isLoggedIn && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
                 return Response.redirect(new URL("/", nextUrl))
             }
+
+            // Allow access to reset-user page for debugging
+            if (nextUrl.pathname === "/reset-user") return true;
+
             return true
         },
     },
