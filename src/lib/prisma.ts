@@ -59,8 +59,17 @@ const prismaClientSingleton = () => {
 
         const adapter = new PrismaLibSql(client as any);
 
-        // Pass adapter only. Engine reads masked DATABASE_URL env var automatically.
-        return new PrismaClient({ adapter });
+        // 5. Instantiate Prisma Client
+        // We use 'datasources' to override the URL for the engine verification.
+        // The 'db' key matches 'datasource db' in schema.prisma
+        return new PrismaClient({
+            adapter,
+            datasources: {
+                db: {
+                    url: "file:./dev.db"
+                }
+            }
+        } as any);
     }
 
     return new PrismaClient();
