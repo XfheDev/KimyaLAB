@@ -59,17 +59,10 @@ const prismaClientSingleton = () => {
 
         const adapter = new PrismaLibSql(client as any);
 
-        // 5. Instantiate Prisma Client
-        // We use 'datasources' to override the URL for the engine verification.
-        // The 'db' key matches 'datasource db' in schema.prisma
-        return new PrismaClient({
-            adapter,
-            datasources: {
-                db: {
-                    url: "file:./dev.db"
-                }
-            }
-        } as any);
+        // 4. Instantiate Prisma Client
+        // We pass the adapter. The engine will use the masked process.env.DATABASE_URL
+        // because we restored 'url = env("DATABASE_URL")' in schema.prisma.
+        return new PrismaClient({ adapter });
     }
 
     return new PrismaClient();
