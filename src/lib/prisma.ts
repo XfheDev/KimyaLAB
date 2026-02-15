@@ -2,37 +2,36 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-// Singleton pattern
+// Global singleton to prevent multiple instances in development and serverless
 const prismaClientSingleton = () => {
-    // 1. Get env vars with fallbacks
-    const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || "file:./dev.db";
+    const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    // 2. Extra safety against "undefined" string
-    const finalUrl = url === "undefined" ? "file:./dev.db" : url;
+    // Use a fallback for build time/initialization, but real queries will fail if URL is missing
+    const finalUrl = (url && url !== "undefined") ? url : "file:./dev.db";
 
-    console.error(`🏗️ Prisma Construction - URL: ${finalUrl.substring(0, 15)}...`);
+    // Normalize https to libsql for the adapter
+    const normalizedUrl = finalUrl.startsWith("https://")
+        ? finalUrl.replace("https://", "libsql://")
+        : finalUrl;
 
-    // 3. Create LibSQL client
+    console.error(`🏗️ Prisma Init - Protocol: ${normalizedUrl.split(':')[0]}, URL Length: ${normalizedUrl.length}`);
+
+    // Create LibSQL client
     const client = createClient({
-        url: finalUrl,
+        url: normalizedUrl,
         authToken: authToken,
     });
 
-    // 4. Create Adapter
+    // Create Prisma adapter for LibSQL
     const adapter = new PrismaLibSql(client as any);
 
-    // 5. Build options
-    const options: any = { adapter };
-
-    // Explicitly pass to datasources to fix the 'undefined' error in Prisma 7
-    options.datasources = {
-        db: {
-            url: finalUrl
-        }
-    };
-
-    return new PrismaClient(options);
+    // Initialize Prisma Client
+    // Prisma 7 uses 'datasourceUrl' (singular) to override the connection string
+    return new PrismaClient({
+        adapter,
+        datasourceUrl: normalizedUrl
+    });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
