@@ -6,17 +6,22 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     console.error("🔍 DB DIAGNOSTIC START");
     try {
+        // Log environment keys (no values for security)
+        const keys = Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO") || k.includes("URL"));
+        console.error("🔍 DB DIAGNOSTIC - Env Keys:", keys);
+
         // Test simple query
         const count = await prisma.user.count();
         console.error("🔍 DB DIAGNOSTIC SUCCESS - User count:", count);
-        return NextResponse.json({ status: "success", count });
+        return NextResponse.json({ status: "success", count, envKeys: keys });
     } catch (error: any) {
         console.error("🔍 DB DIAGNOSTIC FAILED:", error);
         return NextResponse.json({
             status: "error",
             message: error.message,
             code: error.code,
-            stack: error.stack
+            stack: error.stack,
+            envKeysFound: Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO"))
         }, { status: 500 });
     }
 }

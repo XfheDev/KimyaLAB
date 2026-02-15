@@ -2,36 +2,42 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-// Clean up poisoned environment variables that some CI/CD tools might set
-if (process.env.DATABASE_URL === "undefined") {
-    console.error("🧹 Removing poisoned DATABASE_URL 'undefined'");
-    delete process.env.DATABASE_URL;
-}
-if (process.env.TURSO_AUTH_TOKEN === "undefined") {
-    delete process.env.TURSO_AUTH_TOKEN;
-}
-
+// Singleton pattern to ensure we don't create multiple clients in serverless
 const prismaClientSingleton = () => {
-    const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
-    const authToken = process.env.TURSO_AUTH_TOKEN;
+    // 1. Capture environment variables
+    const rawUrl = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
+    const rawToken = process.env.TURSO_AUTH_TOKEN;
 
-    if (!url) {
-        console.error("❌ ERROR: DATABASE_URL is missing!");
-        // Fallback to avoid crash during build/init, but it will fail on real queries
-        return new PrismaClient();
-    }
+    // 2. Handle "undefined" string poisoning and missing values
+    const connectionUrl = (rawUrl && rawUrl !== "undefined") ? rawUrl : "file:./dev.db";
+    const connectionToken = (rawToken && rawToken !== "undefined") ? rawToken : undefined;
 
-    const normalizedUrl = url.startsWith("https://") ? url.replace("https://", "libsql://") : url;
+    // 3. Normalize protocol for LibSQL (ensure libsql:// for adapter compatibility)
+    const normalizedUrl = connectionUrl.startsWith("https://")
+        ? connectionUrl.replace("https://", "libsql://")
+        : connectionUrl;
 
-    console.error(`🚀 InitialIZING Prisma - ${normalizedUrl.split(':')[0]}://... [Len: ${normalizedUrl.length}]`);
+    console.error(`[Prisma Init] Protocol: ${normalizedUrl.split(':')[0]}, URL: ${normalizedUrl.substring(0, 15)}...`);
 
-    const libsql = createClient({
+    // 4. Create the underlying LibSQL client
+    const client = createClient({
         url: normalizedUrl,
-        authToken: authToken,
+        authToken: connectionToken,
     });
 
-    const adapter = new PrismaLibSql(libsql as any);
-    return new PrismaClient({ adapter });
+    // 5. Create the Prisma adapter for LibSQL
+    const adapter = new PrismaLibSql(client as any);
+
+    /**
+     * 6. Initialize Prisma Client.
+     * CRITICAL: We pass datasourceUrl explicitly even with the adapter.
+     * This fixes the "URL_INVALID: The URL 'undefined'" error in Prisma 7.
+     */
+    return new PrismaClient({
+        adapter,
+        // @ts-ignore - Required for internal metadata state in Prisma 7+
+        datasourceUrl: normalizedUrl
+    });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
@@ -40,7 +46,6 @@ const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClientSingleton | undefined;
 };
 
-// Singleton pattern for BOTH dev and prod to ensure stability in serverless
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
