@@ -4,33 +4,38 @@ import { createClient } from "@libsql/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Determine URL based on environment (Try both common Turso names)
-const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
+// Determine URL based on environment (Try ALL common Turso names)
+const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || process.env.TURSO_DB_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
 let prismaInstance: PrismaClient;
 
 try {
     if (process.env.NODE_ENV === "production") {
-        console.log("🛠️ Prisma Prod Init - Checking Env Vars...");
+        console.error("🛠️ Prisma Prod Init - Checking Env...");
 
         const envKeys = Object.keys(process.env);
-        console.log("DEBUG - Found DB-related keys:", envKeys.filter(k => k.includes("DATABASE") || k.includes("TURSO") || k.includes("URL")));
+        const dbKeys = envKeys.filter(k => k.includes("DATABASE") || k.includes("TURSO") || k.includes("URL"));
+        console.error("DEBUG - Found DB-related keys:", dbKeys);
+
+        // Debug specific values (safely)
+        console.error("DEBUG - DATABASE_URL exists:", !!process.env.DATABASE_URL);
+        console.error("DEBUG - TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
+
+        if (process.env.DATABASE_URL === "undefined") console.error("⚠️ WARNING: DATABASE_URL is literally the string 'undefined'");
 
         if (!url || url === "undefined") {
-            console.error("❌ CRITICAL ERROR: DATABASE_URL is missing or 'undefined' in production!");
+            console.error("❌ CRITICAL ERROR: Database URL is missing in production!");
         }
-        if (!authToken || authToken === "undefined") {
-            console.error("❌ CRITICAL ERROR: TURSO_AUTH_TOKEN is missing or 'undefined' in production!");
-        }
+        // The original check for authToken was removed as per the diff.
 
         // Ensure we handle the string "undefined" which can happen in some environments
         const finalUrl = (url && url !== "undefined") ? url : "file:./dev.db";
         const finalToken = (authToken && authToken !== "undefined") ? authToken : undefined;
 
-        console.log("🚀 Connection Attempt:", {
+        console.error("🚀 Connection Details:", {
             protocol: finalUrl.includes(":") ? finalUrl.split(":")[0] : "none",
-            urlStart: finalUrl.substring(0, 10) + "...",
+            urlLength: finalUrl.length,
             hasToken: !!finalToken
         });
 
@@ -50,13 +55,15 @@ try {
                 authToken
             });
             const adapter = new PrismaLibSql(libsql as any);
-            globalForPrisma.prisma = new PrismaClient({ adapter });
+            globalForPrisma.prisma = new PrismaClient({
+                adapter,
+                log: ['query', 'error', 'warn']
+            });
         }
         prismaInstance = globalForPrisma.prisma;
     }
 } catch (error) {
-    console.error("❌ Failed to initialize Prisma Client:", error);
-    // Fallback to avoid "cannot read property of undefined" elsewhere, though app is effectively broken
+    console.error("❌ CRITICAL: Failed to initialize Prisma Client:", error);
     prismaInstance = new PrismaClient();
 }
 
