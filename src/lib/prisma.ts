@@ -25,16 +25,23 @@ const prismaClientSingleton = () => {
 
     console.error(`🏗️ [PRISMA INIT] Adapter URL: ${adapterUrl.substring(0, 15)}... | Token: ${!!authToken}`);
 
-    // 3. Create LibSQL Client
+    // 3. CRITICAL: Mask the DATABASE_URL environment variable
+    // This satisfies Prisma's internal engine which expects a 'file:' URL for 'provider = "sqlite"'
+    // when no 'url' property is present in schema.prisma.
+    if (process.env.DATABASE_URL !== "file:./dev.db") {
+        process.env.DATABASE_URL = "file:./dev.db";
+    }
+
+    // 4. Create LibSQL Client
     const client = createClient({
         url: adapterUrl,
         authToken: authToken,
     });
 
-    // 4. Create Adapter
+    // 5. Create Adapter
     const adapter = new PrismaLibSql(client as any);
 
-    // 5. Instantiate Prisma Client
+    // 6. Instantiate Prisma Client
     // We rely purely on the adapter.
     return new PrismaClient({ adapter });
 };
