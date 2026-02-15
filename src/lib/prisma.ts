@@ -3,37 +3,38 @@ import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
 /**
- * 🚀 Final Boss Fix for Turso + Prisma 7 on Vercel
- * 
- * 1. The 'schema.prisma' now has a hardcoded 'url = "file:./dev.db"'.
- *    This keeps Prisma's internal engine happy and stops "URL_INVALID" errors.
- * 2. This file (prisma.ts) uses the 'PrismaLibSql' adapter to redirect
- *    all actual traffic to Turso.
+ * Prisma Client Initialization
+ * Using Prisma 7 + LibSQL Adapter for Turso
  */
 
 const prismaClientSingleton = () => {
-    // Capture Turso credentials
+    // 1. Get credentials
     const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
-    const token = process.env.TURSO_AUTH_TOKEN || undefined;
+    const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    // If we're using a real Turso URL, use the adapter
-    if (url.startsWith("https://") || url.startsWith("libsql://")) {
-        const normalizedUrl = url.startsWith("https://") ? url.replace("https://", "libsql://") : url;
+    console.error(`🏗️ [PRISMA INIT] Starting...`);
 
-        console.error(`🏗️ [PRISMA ADAPTER] Connecting to ${normalizedUrl.substring(0, 20)}...`);
+    // 2. Prepare adapter URL (must be libsql:// or https://)
+    // If it's a file path, we might be in local dev without Turso
+    const adapterUrl = url.startsWith("file:") ? "file:./dev.db" : (
+        url.startsWith("https://") ? url.replace("https://", "libsql://") : url
+    );
 
-        const client = createClient({
-            url: normalizedUrl,
-            authToken: token,
-        });
+    console.error(`🏗️ [PRISMA INIT] Adapter URL: ${adapterUrl.substring(0, 15)}... | Token: ${!!authToken}`);
 
-        const adapter = new PrismaLibSql(client as any);
-        return new PrismaClient({ adapter });
-    }
+    // 3. Create LibSQL Client
+    const client = createClient({
+        url: adapterUrl,
+        authToken: authToken,
+    });
 
-    // Fallback for local development or if no Turso URL is found
-    console.error("🏗️ [PRISMA LOCAL] No Turso URL found, using local SQLite.");
-    return new PrismaClient();
+    // 4. Create Adapter
+    const adapter = new PrismaLibSql(client as any);
+
+    // 5. Instantiate Prisma Client
+    // With an adapter, we SHOULD NOT need to pass datasourceUrl.
+    // We rely on the adapter to handle communication.
+    return new PrismaClient({ adapter });
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
