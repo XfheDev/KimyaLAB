@@ -28,10 +28,11 @@ const prismaClientSingleton = () => {
 
     // Initialize Prisma Client
     // Prisma 7 uses 'datasourceUrl' (singular) to override the connection string
+    // We use 'as any' to avoid TypeScript 'never' error in some configurations
     return new PrismaClient({
         adapter,
         datasourceUrl: normalizedUrl
-    });
+    } as any);
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
