@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Bookmark } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
@@ -18,16 +18,14 @@ interface Props {
     questions: Question[];
     subjectId: string;
     subjectName: string;
-    initialSavedIds?: string[];
 }
 
-export default function QuizSession({ questions, subjectId, subjectName, initialSavedIds = [] }: Props) {
+export default function QuizSession({ questions, subjectId, subjectName }: Props) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [answers, setAnswers] = useState<Record<number, number>>({});
     const [isFinished, setIsFinished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState<any>(null);
-    const [savedIds, setSavedIds] = useState<string[]>(initialSavedIds);
     const router = useRouter();
 
     const currentQuestion = questions[currentIdx];
@@ -82,23 +80,7 @@ export default function QuizSession({ questions, subjectId, subjectName, initial
         }
     };
 
-    const toggleSave = async (questionId: string) => {
-        // Optimistic update
-        const isSaved = savedIds.includes(questionId);
-        setSavedIds(prev => isSaved ? prev.filter(id => id !== questionId) : [...prev, questionId]);
 
-        try {
-            await fetch("/api/questions/save", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ questionId }),
-            });
-        } catch (error) {
-            console.error("Save failed:", error);
-            // Revert on error
-            setSavedIds(prev => isSaved ? [...prev, questionId] : prev.filter(id => id !== questionId));
-        }
-    };
 
     if (isFinished) {
         const stats = calculateScore();
@@ -264,18 +246,6 @@ export default function QuizSession({ questions, subjectId, subjectName, initial
                     <h3 className="text-xl md:text-3xl font-bold text-foreground leading-snug flex-1">
                         {currentQuestion.text}
                     </h3>
-                    <button
-                        onClick={() => toggleSave(currentQuestion.id)}
-                        className="p-3 bg-foreground/5 hover:bg-primary/10 rounded-xl transition-all group"
-                        title={savedIds.includes(currentQuestion.id) ? "Kaydedilenlerden çıkar" : "Soruyu kaydet"}
-                    >
-                        <Bookmark
-                            className={`h-6 w-6 transition-colors ${savedIds.includes(currentQuestion.id)
-                                ? "text-primary fill-primary"
-                                : "text-foreground/40 group-hover:text-primary"
-                                }`}
-                        />
-                    </button>
                 </div>
 
                 <div className="mt-12 space-y-4">

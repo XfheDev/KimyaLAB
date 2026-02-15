@@ -22,18 +22,6 @@ export default async function QuizPage({
 
     if (!subject) notFound();
 
-    // Fetch saved questions for current user
-    let savedIds: string[] = [];
-    if (session?.user?.email) {
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            include: { savedQuestions: true }
-        });
-        if (user) {
-            savedIds = user.savedQuestions.map(sq => sq.questionId);
-        }
-    }
-
     // Pick 10 random questions or more if available
     const questions = (subject.questions as any[])
         .sort(() => 0.5 - Math.random())
@@ -49,7 +37,6 @@ export default async function QuizPage({
                 questions={questions}
                 subjectId={subject.id}
                 subjectName={subject.name}
-                initialSavedIds={savedIds}
             />
         </div>
     );
