@@ -2,42 +2,37 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-// Singleton pattern to ensure we don't create multiple clients in serverless
+// Singleton pattern
 const prismaClientSingleton = () => {
-    // 1. Capture environment variables
-    const rawUrl = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
-    const rawToken = process.env.TURSO_AUTH_TOKEN;
+    // 1. Get env vars with fallbacks
+    const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || "file:./dev.db";
+    const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    // 2. Handle "undefined" string poisoning and missing values
-    const connectionUrl = (rawUrl && rawUrl !== "undefined") ? rawUrl : "file:./dev.db";
-    const connectionToken = (rawToken && rawToken !== "undefined") ? rawToken : undefined;
+    // 2. Extra safety against "undefined" string
+    const finalUrl = url === "undefined" ? "file:./dev.db" : url;
 
-    // 3. Normalize protocol for LibSQL (ensure libsql:// for adapter compatibility)
-    const normalizedUrl = connectionUrl.startsWith("https://")
-        ? connectionUrl.replace("https://", "libsql://")
-        : connectionUrl;
+    console.error(`🏗️ Prisma Construction - URL: ${finalUrl.substring(0, 15)}...`);
 
-    console.error(`[Prisma Init] Protocol: ${normalizedUrl.split(':')[0]}, URL: ${normalizedUrl.substring(0, 15)}...`);
-
-    // 4. Create the underlying LibSQL client
+    // 3. Create LibSQL client
     const client = createClient({
-        url: normalizedUrl,
-        authToken: connectionToken,
+        url: finalUrl,
+        authToken: authToken,
     });
 
-    // 5. Create the Prisma adapter for LibSQL
+    // 4. Create Adapter
     const adapter = new PrismaLibSql(client as any);
 
-    /**
-     * 6. Initialize Prisma Client.
-     * CRITICAL: We pass datasourceUrl explicitly even with the adapter.
-     * This fixes the "URL_INVALID: The URL 'undefined'" error in Prisma 7.
-     */
-    return new PrismaClient({
-        adapter,
-        // @ts-ignore - Required for internal metadata state in Prisma 7+
-        datasourceUrl: normalizedUrl
-    });
+    // 5. Build options
+    const options: any = { adapter };
+
+    // Explicitly pass to datasources to fix the 'undefined' error in Prisma 7
+    options.datasources = {
+        db: {
+            url: finalUrl
+        }
+    };
+
+    return new PrismaClient(options);
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;

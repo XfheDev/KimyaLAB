@@ -13,13 +13,20 @@ export async function GET() {
         // Test simple query
         const count = await prisma.user.count();
         console.error("🔍 DB DIAGNOSTIC SUCCESS - User count:", count);
-        return NextResponse.json({ status: "success", count, envKeys: keys });
+        return NextResponse.json({
+            status: "success",
+            count,
+            envKeys: keys,
+            nodeVersion: process.version,
+            envCount: Object.keys(process.env).length
+        });
     } catch (error: any) {
         console.error("🔍 DB DIAGNOSTIC FAILED:", error);
         return NextResponse.json({
             status: "error",
             message: error.message,
             code: error.code,
+            meta: error.meta,
             stack: error.stack,
             envKeysFound: Object.keys(process.env).filter(k => k.includes("DATABASE") || k.includes("TURSO"))
         }, { status: 500 });
