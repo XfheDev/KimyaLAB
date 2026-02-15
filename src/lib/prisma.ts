@@ -12,7 +12,7 @@ const libsql = createClient({
     authToken
 });
 
-const adapter = new PrismaLibSql(libsql);
+const adapter = new PrismaLibSql(libsql as any);
 
 export const prisma =
     globalForPrisma.prisma ||
