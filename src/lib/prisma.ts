@@ -2,6 +2,15 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
+// Clean up poisoned environment variables that some CI/CD tools might set
+if (process.env.DATABASE_URL === "undefined") {
+    console.error("🧹 Removing poisoned DATABASE_URL 'undefined'");
+    delete process.env.DATABASE_URL;
+}
+if (process.env.TURSO_AUTH_TOKEN === "undefined") {
+    delete process.env.TURSO_AUTH_TOKEN;
+}
+
 const prismaClientSingleton = () => {
     const url = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
