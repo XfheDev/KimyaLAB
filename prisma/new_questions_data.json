@@ -1,0 +1,157 @@
+[
+    {
+        "subject": "Doğa ve Kimya",
+        "questions": [
+            {
+                "text": "Atmosferdeki su buharının yoğunlaşıp yeryüzüne inmesi döngüsüne ne ad verilir?",
+                "options": [
+                    "Su döngüsü",
+                    "Karbon döngüsü",
+                    "Azot döngüsü",
+                    "Oksijen döngüsü"
+                ],
+                "correctOption": 0
+            },
+            {
+                "text": "Hangi gaz sera etkisi yaparak küresel ısınmaya en çok katkıda bulunur?",
+                "options": [
+                    "Oksijen",
+                    "Azot",
+                    "Karbondioksit (CO2)",
+                    "Hidrojen"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Ozon tabakasının incelmesine neden olan gaz grubu hangisidir?",
+                "options": [
+                    "CFC (Kloroflorokarbonlar)",
+                    "LPG",
+                    "Doğalgaz",
+                    "Oksijen"
+                ],
+                "correctOption": 0
+            },
+            {
+                "text": "Asit yağmurlarına neden olan temel gaz çifti hangisidir?",
+                "options": [
+                    "H2 ve O2",
+                    "SO2 ve NO2",
+                    "CO2 ve O2",
+                    "N2 ve H2"
+                ],
+                "correctOption": 1
+            },
+            {
+                "text": "Su arıtımında pıhtılaştırma (koagülasyon) işlemi neden yapılır?",
+                "options": [
+                    "Mikropları öldürmek için",
+                    "Suyun pH'ını düşürmek için",
+                    "Asılı partikülleri çökeltmek için",
+                    "Suyu dondurmak için"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Sert suların özelliklerinden biri hangisidir?",
+                "options": [
+                    "Sabunu iyi köpürtürler",
+                    "İçimi yumuşaktır",
+                    "Kireç oluştururlar",
+                    "Yağmur suyudur"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Toprak kirliliğine neden olan en kalıcı atık türü hangisidir?",
+                "options": [
+                    "Yemek artıkları",
+                    "Kağıt",
+                    "Plastikler ve ağır metaller",
+                    "Ahşap"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Havanın temel bileşeni olan gaz hangisidir (%78 oranında)?",
+                "options": [
+                    "Oksijen",
+                    "Azot",
+                    "Argon",
+                    "Karbondioksit"
+                ],
+                "correctOption": 1
+            },
+            {
+                "text": "Suyun sertliğini gidermek için kullanılan yöntemlerden biri hangisidir?",
+                "options": [
+                    "Kaynatma",
+                    "Dondurma",
+                    "Tuz ekleme",
+                    "Şeker ekleme"
+                ],
+                "correctOption": 0
+            },
+            {
+                "text": "Çevreye zarar vermeyen enerji kaynaklarına ne denir?",
+                "options": [
+                    "Fosil yakıtlar",
+                    "Nükleer enerji",
+                    "Yenilenebilir enerji",
+                    "Termik santral"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Hangisi bir su kirleticisidir?",
+                "options": [
+                    "Oksijen",
+                    "Balıklar",
+                    "Ağır metaller",
+                    "Kum"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Atmosferin Dünyayı güneşin zararlı ışınlarından koruyan katmanı hangisidir?",
+                "options": [
+                    "Troposfer",
+                    "Ozon tabakası",
+                    "Magma",
+                    "Çekirdek"
+                ],
+                "correctOption": 1
+            },
+            {
+                "text": "Fosil yakıtların yanması sonucu açığa çıkan ve solunum yolu hastalıklarına neden olan gaz nedir?",
+                "options": [
+                    "Azot",
+                    "Oksijen",
+                    "Karbonmonoksit (CO)",
+                    "Helyum"
+                ],
+                "correctOption": 2
+            },
+            {
+                "text": "Geri dönüşümün en önemli yararı nedir?",
+                "options": [
+                    "Çöp miktarını artırmak",
+                    "Doğal kaynakları korumak ve enerji tasarrufu",
+                    "Daha pahalı üretim",
+                    "Zaman kaybı"
+                ],
+                "correctOption": 1
+            },
+            {
+                "text": "Yeşil kimyanın (sürdürülebilir kimya) amacı nedir?",
+                "options": [
+                    "Daha çok atık üretmek",
+                    "Zararlı maddelerin kullanımını ve üretimini azaltmak",
+                    "Sadece kar etmek",
+                    "Fabrikaları kapatmak"
+                ],
+                "correctOption": 1
+            }
+        ]
+    }
+]
