@@ -26,7 +26,17 @@ export async function GET() {
 
     try {
         const count = await prisma.user.count();
-        return NextResponse.json({ status: "success", count, diag });
+        const users = await prisma.user.findMany({ select: { email: true } });
+
+        console.error("🔍 DB DIAGNOSTIC SUCCESS - User count:", count);
+
+        return NextResponse.json({
+            status: "success",
+            count,
+            users: users.map(u => u.email), // List emails to verify existence
+            nodeVersion: process.version,
+            diag
+        });
     } catch (error: any) {
         console.error("🔍 DB DIAGNOSTIC FAILED:", error);
         return NextResponse.json({
