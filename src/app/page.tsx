@@ -76,7 +76,7 @@ export default function Dashboard() {
               KimyaLAB platformunda ilerlemeni takip et ve bugünkü hedeflerine ulaş.
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
             <div className="glass px-6 py-4 rounded-3xl text-center min-w-[120px]">
               <p className="text-xs font-bold text-foreground/40 uppercase mb-1">Başarı Puanı</p>
               <p className="text-2xl font-black text-primary">%{data.stats?.avgScore || 0}</p>
@@ -121,7 +121,7 @@ export default function Dashboard() {
               <p className="text-lg text-foreground/60 font-medium">Uzmanlaşmak istediğin kimya konusunu seç ve testlere başla.</p>
             </div>
 
-            <div className="relative group min-w-[300px]">
+            <div className="relative group w-full md:w-auto md:min-w-[300px]">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-foreground/30 group-focus-within:text-primary transition-colors" />
               </div>

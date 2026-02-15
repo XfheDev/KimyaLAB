@@ -259,9 +259,9 @@ export default function QuizSession({ questions, subjectId, subjectName, initial
                 </div>
             </div>
 
-            <div className="glass rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-primary/5">
+            <div className="glass rounded-[2.5rem] p-6 md:p-12 shadow-2xl shadow-primary/5">
                 <div className="flex justify-between items-start gap-4">
-                    <h3 className="text-2xl md:text-3xl font-bold text-foreground leading-snug flex-1">
+                    <h3 className="text-xl md:text-3xl font-bold text-foreground leading-snug flex-1">
                         {currentQuestion.text}
                     </h3>
                     <button
@@ -271,8 +271,8 @@ export default function QuizSession({ questions, subjectId, subjectName, initial
                     >
                         <Bookmark
                             className={`h-6 w-6 transition-colors ${savedIds.includes(currentQuestion.id)
-                                    ? "text-primary fill-primary"
-                                    : "text-foreground/40 group-hover:text-primary"
+                                ? "text-primary fill-primary"
+                                : "text-foreground/40 group-hover:text-primary"
                                 }`}
                         />
                     </button>
@@ -297,7 +297,7 @@ export default function QuizSession({ questions, subjectId, subjectName, initial
                                 {String.fromCharCode(65 + idx)}
                             </div>
                             <span
-                                className={`text-xl font-medium transition-colors ${answers[currentIdx] === idx ? "text-foreground" : "text-foreground/80"
+                                className={`text-base md:text-xl font-medium transition-colors ${answers[currentIdx] === idx ? "text-foreground" : "text-foreground/80"
                                     }`}
                             >
                                 {option}
