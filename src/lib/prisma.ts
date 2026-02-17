@@ -1,22 +1,17 @@
+import { PrismaClient } from "@prisma/client";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { createClient } from "@libsql/client";
+
 /**
- * ⚠️ CRITICAL FIX: JavaScript 'import' statements are HOISTED.
- * Even if we write env var assignments above them, imports execute first.
+ * Prisma Client with Turso/LibSQL adapter.
  * 
- * Solution: Set DATABASE_URL and then use require() for Prisma.
- * require() is NOT hoisted and executes in order.
+ * DATABASE_URL is masked to "file:./dev.db" in next.config.ts
+ * so the Prisma WASM engine doesn't crash. The actual connection
+ * goes through the LibSQL adapter using TURSO_DATABASE_URL.
  */
 
-// 1. IMMEDIATELY stash the real URL and mask DATABASE_URL
-const _realDbUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
-process.env.DATABASE_URL = "file:./dev.db";
-
-// 2. NOW load Prisma (after masking)
-const { PrismaClient } = require("@prisma/client");
-const { PrismaLibSql } = require("@prisma/adapter-libsql");
-const { createClient } = require("@libsql/client");
-
 const prismaClientSingleton = () => {
-    const url = _realDbUrl || "file:./dev.db";
+    const url = process.env.TURSO_DATABASE_URL || "file:./dev.db";
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
     console.error(`🏗️ [PRISMA] URL: ${url.substring(0, 20)}... | Token: ${!!authToken}`);
@@ -30,14 +25,14 @@ const prismaClientSingleton = () => {
         authToken: authToken,
     });
 
-    const adapter = new PrismaLibSql(client);
+    const adapter = new PrismaLibSql(client as any);
     return new PrismaClient({ adapter });
 };
 
 const globalForPrisma = globalThis as unknown as {
-    prisma: any;
+    prisma: PrismaClient | undefined;
 };
 
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma as any;
