@@ -1,37 +1,22 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-const url = process.env.DATABASE_URL;
+const url = process.env.DATABASE_URL!;
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
-const client = createClient({
-    url: url!,
-    authToken: authToken,
-});
+console.log(`🔗 URL: ${url.substring(0, 30)}...`);
 
-const adapter = new PrismaLibSql(client);
-const prisma = new PrismaClient({ adapter });
+const client = createClient({ url, authToken });
 
 async function main() {
-    console.log("Verifying database content...");
-    console.log("URL:", url);
+    const subjects = await client.execute("SELECT COUNT(*) as count FROM Subject");
+    const questions = await client.execute("SELECT COUNT(*) as count FROM Question");
+    const users = await client.execute("SELECT COUNT(*) as count FROM User");
 
-    const userCount = await prisma.user.count();
-    const subjectCount = await prisma.subject.count();
-    const questionCount = await prisma.question.count();
-
-    console.log("--- RESULTS ---");
-    console.log(`Users: ${userCount}`);
-    console.log(`Subjects: ${subjectCount}`);
-    console.log(`Questions: ${questionCount}`);
-
-    if (subjectCount > 0 && questionCount > 0) {
-        console.log("✅ Database is populated!");
-    } else {
-        console.log("❌ Database appears empty.");
-    }
+    console.log("--- TURSO DATABASE CONTENT ---");
+    console.log(`Subjects: ${subjects.rows[0].count}`);
+    console.log(`Questions: ${questions.rows[0].count}`);
+    console.log(`Users: ${users.rows[0].count}`);
 }
 
-main();
+main().catch(e => { console.error("ERROR:", e); process.exit(1); });
