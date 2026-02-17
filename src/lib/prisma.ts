@@ -1,52 +1,33 @@
+// ⚠️ CRITICAL: Set DATABASE_URL BEFORE importing Prisma.
+// The Prisma WASM query compiler reads process.env.DATABASE_URL during module initialization.
+// Without this, it resolves to 'undefined' and throws URL_INVALID.
+// We stash the real URL first, then mask it.
+const _realDbUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
+process.env.DATABASE_URL = "file:./dev.db";
+
 import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
-/**
- * Prisma Client Initialization (Restored to Working State)
- * 
- * Logic:
- * 1. Schema has NO 'url' property (Fixes P1012).
- * 2. Adapter handles connection.
- * 3. We detect Env Vars robustly.
- */
-
 const prismaClientSingleton = () => {
-    // 1. Get credentials
-    const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
+    const url = _realDbUrl || "file:./dev.db";
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    console.error(`🏗️ [PRISMA INIT] Starting...`);
+    console.error(`🏗️ [PRISMA] URL: ${url.substring(0, 20)}... | Token: ${!!authToken}`);
 
-    // 2. Prepare adapter URL (must be libsql:// or https://)
-    const adapterUrl = url.startsWith("file:") ? "file:./dev.db" : (
-        url.startsWith("https://") ? url.replace("https://", "libsql://") : url
-    );
+    // Normalize URL for adapter
+    const adapterUrl = url.startsWith("https://")
+        ? url.replace("https://", "libsql://")
+        : url;
 
-    console.error(`🏗️ [PRISMA INIT] Adapter URL: ${adapterUrl.substring(0, 15)}... | Token: ${!!authToken}`);
-
-    // 3. CRITICAL: Mask the DATABASE_URL environment variable
-    // This satisfies Prisma's internal engine which expects a 'file:' URL for 'provider = "sqlite"'
-    // when no 'url' property is present in schema.prisma.
-    if (process.env.DATABASE_URL !== "file:./dev.db") {
-        process.env.DATABASE_URL = "file:./dev.db";
-    }
-
-    // 4. Create LibSQL Client
     const client = createClient({
         url: adapterUrl,
         authToken: authToken,
     });
 
-    // 5. Create Adapter
     const adapter = new PrismaLibSql(client as any);
-
-    // 6. Instantiate Prisma Client
-    // We rely purely on the adapter.
     return new PrismaClient({ adapter });
 };
-
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
 
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined;
@@ -54,4 +35,4 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = (prisma as any);
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma as any;
