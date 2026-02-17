@@ -3,15 +3,15 @@ import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 
 /**
- * Prisma Client with Turso/LibSQL adapter.
+ * Prisma 6 + Turso/LibSQL
  * 
- * DATABASE_URL is masked to "file:./dev.db" in next.config.ts
- * so the Prisma WASM engine doesn't crash. The actual connection
- * goes through the LibSQL adapter using TURSO_DATABASE_URL.
+ * - Schema has url = env("DATABASE_URL") → engine reads "file:./dev.db" from Vercel env
+ * - Adapter uses TURSO_DATABASE_URL for actual Turso connection
+ * - driverAdapters preview feature enabled in schema
  */
 
 const prismaClientSingleton = () => {
-    const url = process.env.TURSO_DATABASE_URL || "file:./dev.db";
+    const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
     console.error(`🏗️ [PRISMA] URL: ${url.substring(0, 20)}... | Token: ${!!authToken}`);
@@ -25,8 +25,8 @@ const prismaClientSingleton = () => {
         authToken: authToken,
     });
 
-    const adapter = new PrismaLibSql(client as any);
-    return new PrismaClient({ adapter });
+    const adapter = new PrismaLibSql(client);
+    return new PrismaClient({ adapter } as any);
 };
 
 const globalForPrisma = globalThis as unknown as {
