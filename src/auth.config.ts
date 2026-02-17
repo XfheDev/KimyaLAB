@@ -16,9 +16,6 @@ export const authConfig = {
                 return Response.redirect(new URL("/", nextUrl))
             }
 
-            // Allow access to reset-user page for debugging
-            if (nextUrl.pathname === "/reset-user") return true;
-
             return true
         },
     },
