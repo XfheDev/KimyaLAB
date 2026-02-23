@@ -8,42 +8,21 @@ export async function GET() {
     try {
         const session = await auth();
 
-        // Fetch subjects with prerequisites
+        // Fetch all subjects simply
         const subjects = await prisma.subject.findMany({
             include: {
                 _count: {
                     select: { questions: true },
-                },
-                prerequisites: {
-                    select: { id: true, name: true }
                 }
             },
         });
 
-        // If user is logged in, fetch their completed subject IDs
-        let completedSubjectIds: string[] = [];
-        if (session?.user?.id) {
-            const attempts = await prisma.attempt.findMany({
-                where: {
-                    userId: session.user.id,
-                    score: { gte: 70 } // Consider it "unlocked" next level if score >= 70%
-                },
-                select: { subjectId: true },
-                distinct: ['subjectId']
-            });
-            completedSubjectIds = attempts.map(a => a.subjectId);
-        }
-
-        // Add 'isLocked' status to subjects
-        const enhancedSubjects = subjects.map(subject => {
-            const isLocked = subject.prerequisites.length > 0 &&
-                !subject.prerequisites.every(p => completedSubjectIds.includes(p.id));
-
-            return {
-                ...subject,
-                isLocked
-            };
-        });
+        // Add 'isLocked' as false for all (maintaining backward compatibility with UI if needed, 
+        // though I previously updated the UI to ignore it)
+        const enhancedSubjects = subjects.map(subject => ({
+            ...subject,
+            isLocked: false
+        }));
 
         return NextResponse.json(enhancedSubjects);
     } catch (error) {
