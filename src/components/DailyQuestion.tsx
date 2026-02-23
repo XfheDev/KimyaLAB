@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Zap, Target, BookOpen } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Target, BookOpen, Trophy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
@@ -102,12 +102,12 @@ export default function DailyQuestion() {
                                 onClick={() => handleSelect(idx)}
                                 disabled={showResult}
                                 className={`p-8 rounded-[2rem] text-left transition-all duration-300 border-2 font-bold flex items-center justify-between group/opt relative overflow-hidden ${showResult
-                                        ? isCorrect
-                                            ? "bg-success/20 border-success text-success shadow-lg shadow-success/10"
-                                            : isSelected
-                                                ? "bg-danger/20 border-danger text-danger shadow-lg shadow-danger/10"
-                                                : "bg-foreground/5 border-transparent opacity-40"
-                                        : "bg-foreground/5 border-transparent hover:border-primary/40 hover:bg-foreground/10 hover:shadow-xl hover:-translate-y-1"
+                                    ? isCorrect
+                                        ? "bg-success/20 border-success text-success shadow-lg shadow-success/10"
+                                        : isSelected
+                                            ? "bg-danger/20 border-danger text-danger shadow-lg shadow-danger/10"
+                                            : "bg-foreground/5 border-transparent opacity-40"
+                                    : "bg-foreground/5 border-transparent hover:border-primary/40 hover:bg-foreground/10 hover:shadow-xl hover:-translate-y-1"
                                     }`}
                             >
                                 <span className="text-xl md:text-2xl relative z-10">{option}</span>
@@ -134,8 +134,8 @@ export default function DailyQuestion() {
                         >
                             <div className="flex items-center gap-6">
                                 <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 shadow-2xl ${selected === question.correctOption
-                                        ? "bg-success text-white shadow-success/40"
-                                        : "bg-danger text-white shadow-danger/40"
+                                    ? "bg-success text-white shadow-success/40"
+                                    : "bg-danger text-white shadow-danger/40"
                                     }`}>
                                     {selected === question.correctOption ? (
                                         <Trophy className="h-8 w-8" />

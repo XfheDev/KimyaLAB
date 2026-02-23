@@ -287,9 +287,9 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                         key={currentIdx}
                         custom={direction}
                         variants={{
-                            enter: (d) => ({ x: d > 0 ? 100 : -100, opacity: 0, scale: 0.95 }, { duration: 0.4 }),
+                            enter: (d) => ({ x: d > 0 ? 100 : -100, opacity: 0, scale: 0.95, transition: { duration: 0.4 } }),
                             center: { x: 0, opacity: 1, scale: 1 },
-                            exit: (d) => ({ x: d > 0 ? -100 : 100, opacity: 0, scale: 0.95 }, { duration: 0.4 })
+                            exit: (d) => ({ x: d > 0 ? -100 : 100, opacity: 0, scale: 0.95, transition: { duration: 0.4 } })
                         }}
                         initial="enter"
                         animate="center"
