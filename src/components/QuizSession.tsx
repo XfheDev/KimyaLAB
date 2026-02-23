@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Trophy, ArrowLeft, RefreshCcw, Zap } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Trophy, ArrowLeft, RefreshCcw, Zap, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
@@ -30,11 +30,26 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     const [direction, setDirection] = useState(0);
     const [combo, setCombo] = useState(0);
     const [showCombo, setShowCombo] = useState(false);
+    const [startTime] = useState(new Date().toISOString());
+    const [focusWarning, setFocusWarning] = useState(false);
+
     const { playSFX } = useAudio();
     const router = useRouter();
 
     const currentQuestion = questions[currentIdx];
     const progress = ((currentIdx + 1) / questions.length) * 100;
+
+    // Focus Guard: Detect tab switching
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden && !isFinished) {
+                setFocusWarning(true);
+                playSFX('error');
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, [isFinished, playSFX]);
 
     const stats = useMemo(() => {
         let correct = 0;
@@ -60,7 +75,6 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
         } else {
             playSFX('error');
             setCombo(0);
-            // Haptic Feedback for incorrect selection
             if (typeof window !== "undefined" && window.navigator.vibrate) {
                 window.navigator.vibrate(50);
             }
@@ -76,14 +90,21 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     subjectId,
-                    ...stats,
+                    answers, // Send raw answers for server-side verification
+                    startTime, // Send start time for speed check
                 }),
             });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || "Submission failed");
+            }
+
             const data = await res.json();
             setResult(data);
             setIsFinished(true);
 
-            if (stats.score >= 80) {
+            if (data.score >= 80) {
                 const duration = 5 * 1000;
                 const animationEnd = Date.now() + duration;
                 const defaults = { startVelocity: 40, spread: 360, ticks: 100, zIndex: 0 };
@@ -95,8 +116,9 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                     confetti({ ...defaults, particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } });
                 }, 250);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Submission failed:", error);
+            alert(`Hata: ${error.message}`);
         } finally {
             setSubmitting(false);
         }
@@ -119,6 +141,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     };
 
     if (isFinished) {
+        // ... (Existing result UI stays same, but uses 'result.score' instead of 'stats.score' for absolute truth)
         return (
             <div className="max-w-5xl w-full mx-auto pb-24 px-6 md:px-12">
                 <motion.div
@@ -142,9 +165,9 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                         {[
-                            { label: "Doğru", val: stats.correct, color: "text-success", bg: "bg-success/5", border: "border-success/20" },
-                            { label: "Yanlış", val: stats.wrong, color: "text-danger", bg: "bg-danger/5", border: "border-danger/20" },
-                            { label: "Puan", val: `%${stats.score}`, color: "text-primary", bg: "bg-primary/5", border: "border-primary/20" }
+                            { label: "Doğru", val: result?.attempt?.correct || stats.correct, color: "text-success", bg: "bg-success/5", border: "border-success/20" },
+                            { label: "Yanlış", val: result?.attempt?.wrong || stats.wrong, color: "text-danger", bg: "bg-danger/5", border: "border-danger/20" },
+                            { label: "Puan", val: `%${result?.score || stats.score}`, color: "text-primary", bg: "bg-primary/5", border: "border-primary/20" }
                         ].map((stat, i) => (
                             <motion.div
                                 key={i}
@@ -167,7 +190,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                 <span className="font-black text-foreground/40 uppercase tracking-[0.4em] text-sm">Kozmik Tecrübe Kazancı</span>
                             </div>
                             <div className="flex items-baseline justify-center gap-4">
-                                <span className="text-8xl font-black text-primary text-glow">+{stats.score * 10}</span>
+                                <span className="text-8xl font-black text-primary text-glow">+{result?.pointsEarned || 0}</span>
                                 <span className="text-4xl font-black text-secondary">XP</span>
                             </div>
                         </div>
@@ -189,7 +212,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                     </div>
                 </motion.div>
 
-                {/* Question Review Section */}
+                {/* Question Review Section (Same as before) */}
                 <div className="mt-32 space-y-12">
                     <div className="flex items-center gap-6 px-4">
                         <div className="h-3 w-20 bg-primary rounded-full" />
@@ -242,9 +265,6 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="absolute -bottom-10 -right-10 bg-foreground/5 p-12 rounded-full opacity-0 group-hover:opacity-100 transition-universal">
-                                        {isCorrect ? <Check className="h-32 w-32 text-success/20" /> : <X className="h-32 w-32 text-danger/20" />}
-                                    </div>
                                 </motion.div>
                             );
                         })}
@@ -256,6 +276,28 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
 
     return (
         <div className="max-w-5xl w-full mx-auto px-6 md:px-12 relative">
+            <AnimatePresence>
+                {focusWarning && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 100 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 100 }}
+                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[90%] md:w-auto"
+                    >
+                        <div className="bg-danger text-white px-10 py-6 rounded-[2rem] shadow-2xl flex items-center gap-6 border-4 border-white/20">
+                            <AlertTriangle className="h-8 w-8 animate-bounce" />
+                            <div className="text-left">
+                                <p className="text-sm font-black uppercase tracking-widest">Simülasyondan Ayrılma!</p>
+                                <p className="font-bold">Hile tespit sistemi aktif. Odaklan kanka!</p>
+                            </div>
+                            <button onClick={() => setFocusWarning(false)} className="ml-4 p-2 hover:bg-white/10 rounded-full transition-colors">
+                                <Check className="h-6 w-6" />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence>
                 {showCombo && (
                     <motion.div

@@ -11,34 +11,62 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const { subjectId, score, correct, wrong } = await req.json();
+        const { subjectId, answers, startTime } = await req.json();
 
-        // Calculate XP: 10 points per 1% score
+        // 1. Fetch the actual questions to verify answers
+        const subject = await prisma.subject.findUnique({
+            where: { id: subjectId },
+            include: { questions: true }
+        });
+
+        if (!subject) {
+            return NextResponse.json({ message: "Subject not found" }, { status: 404 });
+        }
+
+        // 2. Anti-Cheat: Validate time elapsed
+        const now = new Date();
+        const timeElapsedSeconds = (now.getTime() - new Date(startTime).getTime()) / 1000;
+
+        // If they finished 5 questions in under 2 seconds, its probably a bot
+        const minimumTimePerQuestion = 0.5; // very generous
+        if (timeElapsedSeconds < subject.questions.length * minimumTimePerQuestion) {
+            console.warn(`[SENTINEL] Cheat detected for user ${session.user.id}: finished too fast (${timeElapsedSeconds}s)`);
+            return NextResponse.json({ message: "Security Validation Failed: Speed violation" }, { status: 403 });
+        }
+
+        // 3. Re-calculate score on server
+        let correct = 0;
+        let wrong = 0;
+
+        subject.questions.forEach((q, idx) => {
+            if (answers[idx] === q.correctOption) {
+                correct++;
+            } else if (answers[idx] !== undefined) {
+                wrong++;
+            }
+        });
+
+        const total = subject.questions.length;
+        const score = total > 0 ? Math.round((correct / total) * 100) : 0;
         const pointsEarned = score * 10;
 
+        // 4. Update user and record attempt
         const user = await prisma.user.findUnique({
-            where: { id: session.user.id } as any
+            where: { id: session.user.id }
         }) as any;
 
         if (!user) throw new Error("User not found");
 
-        // Gamification logic
         const newPoints = user.points + pointsEarned;
         const newLevel = Math.floor(newPoints / 1000) + 1;
 
-        // Simple streak logic
-        const now = new Date();
+        // Streak logic
         const lastActivity = new Date(user.lastActivity);
-        const dayDiff = Math.floor((now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
-
-        let newStreak = user.streak;
-
-        // Calculate days since last activity
-        // Reset time to midnight for accurate day difference
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const lastStart = new Date(lastActivity.getFullYear(), lastActivity.getMonth(), lastActivity.getDate());
         const diffDays = Math.round((todayStart.getTime() - lastStart.getTime()) / (1000 * 60 * 60 * 24));
 
+        let newStreak = user.streak;
         if (user.streak === 0) {
             newStreak = 1;
         } else if (diffDays === 1) {
@@ -46,10 +74,8 @@ export async function POST(req: Request) {
         } else if (diffDays > 1) {
             newStreak = 1;
         }
-        // If diffDays is 0, streak remains the same
 
-        // Update user and create attempt
-        const [attempt, updatedUser] = await prisma.$transaction([
+        const [attempt] = await prisma.$transaction([
             prisma.attempt.create({
                 data: {
                     userId: session.user.id,
@@ -73,8 +99,10 @@ export async function POST(req: Request) {
         return NextResponse.json({
             attempt,
             streak: newStreak,
-            pointsEarned
+            pointsEarned,
+            score
         }, { status: 201 });
+
     } catch (error) {
         console.error("Submission error:", error);
         return NextResponse.json(

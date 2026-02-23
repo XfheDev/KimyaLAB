@@ -9,10 +9,14 @@ import Leaderboard from "@/components/Leaderboard";
 import DailyQuestion from "@/components/DailyQuestion";
 import SmartFeedback from "@/components/SmartFeedback";
 import SkeletonCard from "@/components/SkeletonCard";
+import NoteSystem from "@/components/NoteSystem";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { useAudio } from "@/components/AudioProvider";
 
-function Atom({ className, scale = 1, delay = 0 }: { className?: string, scale?: number, delay?: number }) {
+function Atom({ className, scale = 1, delay = 0, level = 1 }: { className?: string, scale?: number, delay?: number, level?: number }) {
+  // Orbit speed increases with level (10s base, decreases by 0.5s per level, min 2s)
+  const orbitDuration = Math.max(2, 12 - (level * 0.5));
+
   return (
     <motion.svg
       viewBox="0 0 100 100"
@@ -26,7 +30,7 @@ function Atom({ className, scale = 1, delay = 0 }: { className?: string, scale?:
       transition={{
         opacity: { duration: 5, repeat: Infinity, ease: "easeInOut" },
         scale: { duration: 2, delay },
-        rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+        rotate: { duration: orbitDuration, repeat: Infinity, ease: "linear" }
       }}
     >
       <circle cx="50" cy="50" r="10" fill="currentColor" />
@@ -137,14 +141,15 @@ export default function Dashboard() {
 
   const renderContent = () => {
     const { subjects, user } = data || {};
+    const currentLevel = user?.level || 1;
 
     return (
       <div className="min-h-screen mesh-gradient text-foreground transition-universal pb-24 relative overflow-x-hidden">
-        {/* Ambient Hero / Floating Physics */}
+        {/* Ambient Hero / Floating Physics - Now reactive to level! */}
         <motion.div style={{ y: yAtoms }} className="fixed inset-0 pointer-events-none z-0">
-          <Atom className="absolute top-[15%] left-[5%] w-32 h-32 text-primary/10" scale={1.2} delay={0.1} />
-          <Atom className="absolute top-[60%] left-[85%] w-48 h-48 text-secondary/10" scale={1.5} delay={0.5} />
-          <Atom className="absolute top-[80%] left-[15%] w-24 h-24 text-accent/10" scale={0.8} delay={0.3} />
+          <Atom className="absolute top-[15%] left-[5%] w-32 h-32 text-primary/10" scale={1.2} delay={0.1} level={currentLevel} />
+          <Atom className="absolute top-[60%] left-[85%] w-48 h-48 text-secondary/10" scale={1.5} delay={0.5} level={currentLevel} />
+          <Atom className="absolute top-[80%] left-[15%] w-24 h-24 text-accent/10" scale={0.8} delay={0.3} level={currentLevel} />
           <div className="absolute top-[40%] left-[50%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-ring" />
         </motion.div>
 
@@ -210,6 +215,7 @@ export default function Dashboard() {
             >
               <DailyQuestion />
               <SmartFeedback />
+              <NoteSystem />
             </motion.section>
 
             <motion.section
@@ -273,7 +279,6 @@ export default function Dashboard() {
                             onHover={() => changeAccent(subjectStyles[idx % subjectStyles.length])}
                           >
                             <div className="relative h-full p-12 glass-morphism rounded-[4rem] border border-border-theme/40 group hover:border-primary/60 transition-universal overflow-hidden shadow-2xl">
-                              {/* Aura Decorators */}
                               <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/30 transition-universal" />
                               <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full group-hover:bg-secondary/30 transition-universal" />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { BookOpen, LogOut, Award, Star, Settings, Menu, X, ChevronDown, UserCircle } from "lucide-react";
+import { BookOpen, LogOut, Award, Star, Settings, Menu, X, ChevronDown, UserCircle, Zap } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
@@ -21,6 +21,11 @@ export default function Navbar({ user }: NavbarProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+    // Energy calculation: level logic is points / 1000 + 1
+    // Progress is the remainder of points / 1000
+    const pointsInCurrentLevel = (user.points || 0) % 1000;
+    const progressToNextLevel = (pointsInCurrentLevel / 1000) * 100;
+
     return (
         <nav className="glass sticky top-4 z-50 mx-4 sm:mx-8 rounded-[2rem] border border-border-theme/40 mt-4 overflow-visible">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -37,6 +42,28 @@ export default function Navbar({ user }: NavbarProps) {
                         KimyaLAB
                     </span>
                 </Link>
+
+                {/* Level Progress Centerpiece (Desktop Only) */}
+                <div className="hidden xl:flex flex-col items-center gap-2 group cursor-help">
+                    <div className="flex items-center gap-2">
+                        <Zap className="h-3 w-3 text-accent animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Enerji Seviyesi</span>
+                    </div>
+                    <div className="w-48 h-2 bg-foreground/5 rounded-full overflow-hidden border border-border-theme/20 shadow-inner">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progressToNextLevel}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="h-full bg-gradient-to-r from-primary via-secondary to-accent relative"
+                        >
+                            <motion.div
+                                animate={{ x: [-100, 200], opacity: [0, 1, 0] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                className="absolute inset-y-0 w-8 bg-white/40 blur-md rotate-45"
+                            />
+                        </motion.div>
+                    </div>
+                </div>
 
                 {/* Desktop Desktop Actions */}
                 <div className="hidden lg:flex items-center gap-8">
@@ -150,6 +177,21 @@ export default function Navbar({ user }: NavbarProps) {
                         className="lg:hidden border-t border-border-theme/20 overflow-hidden bg-background/80 backdrop-blur-2xl px-6 pb-6 rounded-b-[2rem]"
                     >
                         <div className="pt-6 space-y-6">
+                            {/* Mobile Energy Bar */}
+                            <div className="flex flex-col gap-2 p-4 bg-foreground/5 rounded-3xl border border-border-theme/30">
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Enerji</span>
+                                    <span className="text-[10px] font-black text-primary">%{Math.round(progressToNextLevel)}</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${progressToNextLevel}%` }}
+                                        className="h-full bg-primary"
+                                    />
+                                </div>
+                            </div>
+
                             {/* Mobile Stats Grid */}
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="flex flex-col items-center gap-2 p-4 bg-foreground/5 rounded-3xl border border-border-theme/30 group">
