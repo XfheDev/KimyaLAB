@@ -26,7 +26,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     const [isFinished, setIsFinished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState<any>(null);
-    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
+    const [direction, setDirection] = useState(0);
     const router = useRouter();
 
     const currentQuestion = questions[currentIdx];
@@ -44,6 +44,11 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
 
     const handleSelect = (optIdx: number) => {
         setAnswers((prev) => ({ ...prev, [currentIdx]: optIdx }));
+
+        // Haptic Feedback for incorrect selection (experimental API)
+        if (optIdx !== currentQuestion.correctOption && typeof window !== "undefined" && window.navigator.vibrate) {
+            window.navigator.vibrate(50);
+        }
     };
 
     const handleFinish = async () => {
@@ -96,7 +101,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
 
     if (isFinished) {
         return (
-            <div className="max-w-4xl w-full mx-auto pb-24">
+            <div className="max-w-4xl w-full mx-auto pb-24 px-4 sm:px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -243,7 +248,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     }
 
     return (
-        <div className="max-w-4xl w-full mx-auto">
+        <div className="max-w-4xl w-full mx-auto px-4 sm:px-6">
             {/* Liquid Progress Bar Section */}
             <div className="mb-12 glass p-4 rounded-[2.5rem] border border-border-theme/30 backdrop-blur-3xl shadow-xl">
                 <div className="flex justify-between items-center px-4 mb-4">
@@ -252,7 +257,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                     </button>
                     <div className="text-center">
                         <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Meydan Okuma</p>
-                        <h1 className="text-2xl font-black text-foreground truncate max-w-[200px] md:max-w-md">{subjectName}</h1>
+                        <h1 className="text-2xl font-black text-foreground truncate max-w-[150px] md:max-w-md">{subjectName}</h1>
                     </div>
                     <div className="bg-primary/10 px-4 py-2 rounded-2xl border border-primary/20">
                         <span className="text-lg font-black text-primary">{currentIdx + 1}</span>
@@ -268,7 +273,6 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                         animate={{ width: `calc(${progress}% - 8px)` }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                     >
-                        {/* Bubbles / Sparkles inside progress */}
                         <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white/20 to-transparent overflow-hidden">
                             <motion.div
                                 animate={{ x: [0, 100], opacity: [0, 1, 0] }}
@@ -281,7 +285,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
             </div>
 
             {/* Question Container */}
-            <div className="relative min-h-[500px]">
+            <div className="relative min-h-[500px] mb-24 lg:mb-0">
                 <AnimatePresence mode="wait" custom={direction}>
                     <motion.div
                         key={currentIdx}
@@ -311,7 +315,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                             </motion.p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 mb-10">
                             {currentQuestion.options.map((option, idx) => {
                                 const isSelected = answers[currentIdx] === idx;
                                 return (
@@ -329,7 +333,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-12 h-12 rounded-2xl flex items-center justify-center font-black mr-6 transition-all duration-300 shadow-md",
+                                            "w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-black mr-4 md:mr-6 transition-all duration-300 shadow-md shrink-0",
                                             isSelected
                                                 ? "bg-primary text-white scale-110 rotate-3"
                                                 : "bg-foreground/5 text-foreground/40 group-hover:bg-primary/20 group-hover:text-primary group-hover:rotate-6"
@@ -337,7 +341,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                             {String.fromCharCode(65 + idx)}
                                         </div>
                                         <span className={cn(
-                                            "text-lg md:text-2xl font-bold transition-colors",
+                                            "text-lg md:text-2xl font-bold transition-colors truncate",
                                             isSelected ? "text-foreground" : "text-foreground/70"
                                         )}>
                                             {option}
@@ -345,49 +349,52 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         {isSelected && (
                                             <motion.div
                                                 layoutId="active-indicator"
-                                                className="absolute right-8 h-4 w-4 rounded-full bg-primary glow shadow-primary/50"
+                                                className="absolute right-8 h-4 w-4 rounded-full bg-primary glow shadow-primary/50 hidden md:block"
                                             />
                                         )}
                                     </motion.button>
                                 );
                             })}
                         </div>
-
-                        <div className="mt-14 flex items-center gap-6">
-                            <button
-                                onClick={prevQuestion}
-                                disabled={currentIdx === 0}
-                                className="p-6 text-foreground/40 hover:bg-foreground/5 rounded-3xl disabled:opacity-0 transition-glass border border-border-theme/50 active:scale-90"
-                            >
-                                <ChevronLeft className="h-8 w-8" />
-                            </button>
-
-                            {currentIdx === questions.length - 1 ? (
-                                <button
-                                    onClick={handleFinish}
-                                    disabled={submitting || answers[currentIdx] === undefined}
-                                    className="flex-1 py-6 bg-gradient-to-r from-primary to-secondary text-white rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/40 text-xl"
-                                >
-                                    {submitting ? <RefreshCcw className="h-7 w-7 animate-spin" /> : (
-                                        <>
-                                            <Flag className="h-7 w-7" />
-                                            Analizi Bitir
-                                        </>
-                                    )}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={nextQuestion}
-                                    disabled={answers[currentIdx] === undefined}
-                                    className="flex-1 py-6 bg-foreground text-background dark:bg-white dark:text-black rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl text-xl"
-                                >
-                                    Sıradaki Adım
-                                    <ChevronRight className="h-7 w-7" />
-                                </button>
-                            )}
-                        </div>
                     </motion.div>
                 </AnimatePresence>
+            </div>
+
+            {/* Desktop Navigation Floating (Fixed below question on small mobile) */}
+            <div className="fixed bottom-6 left-0 right-0 px-6 sm:px-12 z-40 lg:relative lg:bottom-auto lg:px-0 lg:mt-12 lg:mb-12">
+                <div className="max-w-4xl mx-auto flex items-center gap-4">
+                    <button
+                        onClick={prevQuestion}
+                        disabled={currentIdx === 0}
+                        className="p-6 bg-glass text-foreground/40 hover:bg-foreground/10 rounded-3xl disabled:opacity-0 transition-glass border border-border-theme/50 shadow-2xl active:scale-90"
+                    >
+                        <ChevronLeft className="h-8 w-8" />
+                    </button>
+
+                    {currentIdx === questions.length - 1 ? (
+                        <button
+                            onClick={handleFinish}
+                            disabled={submitting || answers[currentIdx] === undefined}
+                            className="flex-1 py-7 bg-gradient-to-r from-primary to-secondary text-white rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/40 text-xl"
+                        >
+                            {submitting ? <RefreshCcw className="h-7 w-7 animate-spin" /> : (
+                                <>
+                                    <Flag className="h-7 w-7" />
+                                    Analizi Bitir
+                                </>
+                            )}
+                        </button>
+                    ) : (
+                        <button
+                            onClick={nextQuestion}
+                            disabled={answers[currentIdx] === undefined}
+                            className="flex-1 py-7 bg-foreground text-background dark:bg-white dark:text-black rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl text-xl"
+                        >
+                            Sıradaki Adım
+                            <ChevronRight className="h-7 w-7" />
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
