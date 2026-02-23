@@ -1,32 +1,31 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
-import { createClient } from "@libsql/client";
+import { PrismaLibSQL } from "@prisma/adapter-libsql";
 
 /**
- * Prisma 6 + Turso/LibSQL
+ * Prisma 6 + Turso/LibSQL Fix
  * 
- * - Schema has url = env("DATABASE_URL") → engine reads "file:./dev.db" from Vercel env
- * - Adapter uses TURSO_DATABASE_URL for actual Turso connection
- * - driverAdapters preview feature enabled in schema
+ * In Prisma 6, PrismaLibSQL is a factory. 
+ * We must pass the factory instance directly to PrismaClient as 'adapter'.
+ * PrismaClient will internaly call adapter.connect() during initialization.
  */
 
 const prismaClientSingleton = () => {
-    const url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "file:./dev.db";
+    // Primary URL should be the Turso one
+    const url = process.env.TURSO_DATABASE_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
-    console.error(`🏗️ [PRISMA] URL: ${url.substring(0, 20)}... | Token: ${!!authToken}`);
+    if (!url) {
+        console.error("🏗️ [PRISMA] ERROR: TURSO_DATABASE_URL is not set!");
+    }
 
-    const adapterUrl = url.startsWith("https://")
-        ? url.replace("https://", "libsql://")
-        : url;
-
-    const client = createClient({
-        url: adapterUrl,
+    // Initialize the adapter factory
+    const adapter = new PrismaLibSQL({
+        url: url || "file:./dev.db",
         authToken: authToken,
     });
 
-    const adapter = new PrismaLibSql(client);
-    return new PrismaClient({ adapter } as any);
+    // Pass the factory as the adapter
+    return new PrismaClient({ adapter });
 };
 
 const globalForPrisma = globalThis as unknown as {
