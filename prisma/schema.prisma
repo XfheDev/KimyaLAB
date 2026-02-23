@@ -8,11 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  STUDENT
+  MODERATOR
+  ADMIN
+}
+
 model User {
   id           String        @id @default(cuid())
   email        String        @unique
   password     String
   name         String?
+  role         Role          @default(STUDENT)
   points       Int           @default(0)
   level        Int           @default(1)
   streak       Int           @default(0)
@@ -20,8 +27,18 @@ model User {
   attempts     Attempt[]
   achievements Achievement[]
   notes        Note[]
+  activityLogs ActivityLog[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String // e.g., "LOGIN", "START_QUIZ", "SUBMIT_QUIZ"
+  metadata  String? // JSON string for extra info
+  createdAt DateTime @default(now())
 }
 
 model Achievement {
@@ -35,11 +52,14 @@ model Achievement {
 }
 
 model Subject {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  questions Question[]
-  attempts  Attempt[]
-  notes     Note[]
+  id             String     @id @default(cuid())
+  name           String     @unique
+  description    String?
+  questions      Question[]
+  attempts       Attempt[]
+  notes          Note[]
+  prerequisites  Subject[]  @relation("SubjectPrerequisites")
+  requiredFor    Subject[]  @relation("SubjectPrerequisites")
 }
 
 model Note {
