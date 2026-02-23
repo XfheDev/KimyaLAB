@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SessionProvider } from "@/components/Providers";
+import { AudioProvider } from "@/components/AudioProvider";
 
 export default function RootLayout({
   children,
@@ -32,7 +33,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SessionProvider>
-            {children}
+            <AudioProvider>
+              {children}
+            </AudioProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>
