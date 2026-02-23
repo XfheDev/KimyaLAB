@@ -265,8 +265,8 @@ export default function Dashboard() {
                     </motion.div>
                   ))
                 ) : (
-                  subjects
-                    .filter((s: any) => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                  (subjects || [])
+                    .filter((s: any) => s.name?.toLowerCase().includes(searchQuery.toLowerCase()))
                     .map((subject: any, idx: number) => {
                       const isLocked = subject.isLocked;
                       return (
