@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { BookOpen, Award, ArrowRight, Search, Sparkles, Target, Zap, Lock, ShieldCheck, Database } from "lucide-react";
+import { BookOpen, Award, ArrowRight, Search, Sparkles, Target, Zap } from "lucide-react";
 import UserStats from "@/components/UserStats";
 import Leaderboard from "@/components/Leaderboard";
 import DailyQuestion from "@/components/DailyQuestion";
@@ -166,15 +166,6 @@ export default function Dashboard() {
         <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12 relative z-10">
           <header className="mb-24 flex flex-col lg:flex-row lg:items-center justify-between gap-16">
             <div className="max-w-3xl">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 rounded-full border border-primary/20 mb-8 backdrop-blur-md"
-              >
-                <ShieldCheck className="h-4 w-4 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Galaktik Veri Koruma: Aktif</span>
-              </motion.div>
-
               <motion.h1
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -195,7 +186,6 @@ export default function Dashboard() {
               className="flex flex-col sm:flex-row gap-8 w-full lg:w-auto"
             >
               {[
-                { icon: <Database className="h-10 w-10" />, label: "İşlem Logu", val: data?.stats?.totalAttempts || 0, color: "bg-primary/20 text-primary" },
                 { icon: <Award className="h-10 w-10" />, label: "Deneyim", val: user?.points || 0, color: "bg-accent/20 text-accent" }
               ].map((item, i) => (
                 <div key={i} className="glass-morphism p-10 rounded-[3rem] min-w-[240px] flex flex-col items-center justify-center group hover:scale-105 transition-universal shadow-2xl">
@@ -240,7 +230,7 @@ export default function Dashboard() {
                   <h2 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Kozmik Modüller</h2>
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black mb-8 leading-tight">Ustalık Yolculuğun</h2>
-                <p className="text-2xl text-foreground/40 font-medium max-w-xl">Konuların kilitlerini açmak için önceki modülleri %70 başarıyla tamamlamalısın.</p>
+                <p className="text-2xl text-foreground/40 font-medium max-w-xl">Bugün moleküler düzeyde hangi konuyu keşfedeceksin?</p>
               </div>
 
               <div className="relative group w-full lg:w-auto lg:min-w-[500px]">
@@ -268,7 +258,6 @@ export default function Dashboard() {
                   (subjects || [])
                     .filter((s: any) => s.name?.toLowerCase().includes(searchQuery.toLowerCase()))
                     .map((subject: any, idx: number) => {
-                      const isLocked = subject.isLocked;
                       return (
                         <motion.div
                           key={subject.id}
@@ -278,68 +267,48 @@ export default function Dashboard() {
                           exit={{ opacity: 0, scale: 0.9 }}
                           transition={{ duration: 0.5, delay: idx * 0.05, ease: [0.23, 1, 0.32, 1] }}
                         >
-                          {isLocked ? (
-                            <div className="relative h-full p-12 glass-morphism rounded-[4rem] border border-border-theme/20 opacity-60 grayscale cursor-not-allowed group">
-                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20">
-                                <div className="p-6 bg-foreground/10 rounded-full backdrop-blur-xl border border-white/10 shadow-2xl">
-                                  <Lock className="h-10 w-10 text-foreground/30" />
-                                </div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/20">Modül Kilitli</p>
-                                {subject.prerequisites?.length > 0 && (
-                                  <div className="mt-4 px-6 py-3 bg-red-500/10 rounded-2xl border border-red-500/20">
-                                    <p className="text-[9px] font-black text-red-500 uppercase tracking-widest whitespace-nowrap">Gereksinim: {subject.prerequisites[0].name}</p>
+                          <Link href={`/quiz/${subject.id}`} className="block h-full">
+                            <TiltCard
+                              className="h-full"
+                              onHover={() => changeAccent(subjectStyles[idx % subjectStyles.length])}
+                            >
+                              <div className="relative h-full p-12 glass-morphism rounded-[4rem] border border-border-theme/40 group hover:border-primary/60 transition-universal overflow-hidden shadow-2xl">
+                                <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/30 transition-universal" />
+                                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full group-hover:bg-secondary/30 transition-universal" />
+
+                                <div className="relative z-10" style={{ transform: "translateZ(60px)" }}>
+                                  <div className="flex items-center justify-between mb-12">
+                                    <div className="p-5 bg-gradient-to-br from-primary to-secondary rounded-3xl shadow-2xl shadow-primary/30 group-hover:scale-110 group-hover:rotate-12 transition-universal">
+                                      <BookOpen className="h-8 w-8 text-white" />
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                      <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mb-2">Atom Sayısı</span>
+                                      <span className="text-3xl font-black text-foreground/50">{subject._count?.questions || 0}</span>
+                                    </div>
                                   </div>
-                                )}
-                              </div>
-                              <div className="blur-sm select-none">
-                                <h3 className="text-4xl font-black mb-6">{subject.name}</h3>
-                                <div className="h-2 w-20 bg-foreground/5 rounded-full" />
-                              </div>
-                            </div>
-                          ) : (
-                            <Link href={`/quiz/${subject.id}`} className="block h-full">
-                              <TiltCard
-                                className="h-full"
-                                onHover={() => changeAccent(subjectStyles[idx % subjectStyles.length])}
-                              >
-                                <div className="relative h-full p-12 glass-morphism rounded-[4rem] border border-border-theme/40 group hover:border-primary/60 transition-universal overflow-hidden shadow-2xl">
-                                  <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/30 transition-universal" />
-                                  <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full group-hover:bg-secondary/30 transition-universal" />
 
-                                  <div className="relative z-10" style={{ transform: "translateZ(60px)" }}>
-                                    <div className="flex items-center justify-between mb-12">
-                                      <div className="p-5 bg-gradient-to-br from-primary to-secondary rounded-3xl shadow-2xl shadow-primary/30 group-hover:scale-110 group-hover:rotate-12 transition-universal">
-                                        <BookOpen className="h-8 w-8 text-white" />
-                                      </div>
-                                      <div className="flex flex-col items-end">
-                                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mb-2">Atom Sayısı</span>
-                                        <span className="text-3xl font-black text-foreground/50">{subject._count?.questions || 0}</span>
-                                      </div>
+                                  <h3 className="text-4xl font-black mb-6 group-hover:text-primary transition-colors leading-[1.1]">
+                                    {subject.name}
+                                  </h3>
+
+                                  <div className="flex flex-wrap items-center gap-3 mb-12">
+                                    <span className="px-5 py-2 bg-primary/10 text-[10px] font-black uppercase text-primary rounded-xl border border-primary/10">TYT-ULTRA</span>
+                                    <span className="px-5 py-2 bg-secondary/10 text-[10px] font-black uppercase text-secondary rounded-xl border border-secondary/10">Kimya</span>
+                                  </div>
+
+                                  <div className="mt-12 pt-12 border-t border-border-theme/30 flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                      <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-1">Potansiyel</span>
+                                      <span className="text-2xl font-black text-primary text-glow">+1000 XP</span>
                                     </div>
-
-                                    <h3 className="text-4xl font-black mb-6 group-hover:text-primary transition-colors leading-[1.1]">
-                                      {subject.name}
-                                    </h3>
-
-                                    <div className="flex flex-wrap items-center gap-3 mb-12">
-                                      <span className="px-5 py-2 bg-primary/10 text-[10px] font-black uppercase text-primary rounded-xl border border-primary/10">TYT-ULTRA</span>
-                                      <span className="px-5 py-2 bg-secondary/10 text-[10px] font-black uppercase text-secondary rounded-xl border border-secondary/10">Kimya</span>
-                                    </div>
-
-                                    <div className="mt-12 pt-12 border-t border-border-theme/30 flex items-center justify-between">
-                                      <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-1">Potansiyel</span>
-                                        <span className="text-2xl font-black text-primary text-glow">+1000 XP</span>
-                                      </div>
-                                      <div className="w-16 h-16 rounded-full border border-border-theme/40 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-universal shadow-xl">
-                                        <ArrowRight className="h-8 w-8 text-foreground/20 group-hover:text-white transition-universal group-hover:translate-x-2" />
-                                      </div>
+                                    <div className="w-16 h-16 rounded-full border border-border-theme/40 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-universal shadow-xl">
+                                      <ArrowRight className="h-8 w-8 text-foreground/20 group-hover:text-white transition-universal group-hover:translate-x-2" />
                                     </div>
                                   </div>
                                 </div>
-                              </TiltCard>
-                            </Link>
-                          )}
+                              </div>
+                            </TiltCard>
+                          </Link>
                         </motion.div>
                       );
                     })

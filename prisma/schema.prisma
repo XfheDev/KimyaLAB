@@ -27,18 +27,8 @@ model User {
   attempts     Attempt[]
   achievements Achievement[]
   notes        Note[]
-  activityLogs ActivityLog[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-}
-
-model ActivityLog {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String // e.g., "LOGIN", "START_QUIZ", "SUBMIT_QUIZ"
-  metadata  String? // JSON string for extra info
-  createdAt DateTime @default(now())
 }
 
 model Achievement {
@@ -58,8 +48,6 @@ model Subject {
   questions      Question[]
   attempts       Attempt[]
   notes          Note[]
-  prerequisites  Subject[]  @relation("SubjectPrerequisites")
-  requiredFor    Subject[]  @relation("SubjectPrerequisites")
 }
 
 model Note {

@@ -16,23 +16,6 @@ export function getProgressToNextLevel(points: number): number {
 }
 
 /**
- * Logs a user activity in the database for analytics and security.
- */
-export async function logActivity(userId: string, action: string, metadata?: any) {
-    try {
-        await prisma.activityLog.create({
-            data: {
-                userId,
-                action,
-                metadata: metadata ? JSON.stringify(metadata) : null,
-            }
-        });
-    } catch (error) {
-        console.error("Activity logging failed:", error);
-    }
-}
-
-/**
  * Achievement Engine: Processes database events to unlock achievements.
  * This runs on the server after submissions.
  */

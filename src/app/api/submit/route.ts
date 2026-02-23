@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { calculateLevel, logActivity, processAchievements } from "@/lib/game-logic";
+import { calculateLevel, processAchievements } from "@/lib/game-logic";
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +29,6 @@ export async function POST(req: Request) {
         const timeElapsedSeconds = (now.getTime() - new Date(startTime).getTime()) / 1000;
         const minimumTimePerQuestion = 0.5;
         if (timeElapsedSeconds < subject.questions.length * minimumTimePerQuestion) {
-            await logActivity(session.user.id, "CHEAT_DETECTED", { type: "SPEED_VIOLATION", subjectId, time: timeElapsedSeconds });
             return NextResponse.json({ message: "Security Validation Failed: Speed violation" }, { status: 403 });
         }
 
@@ -78,8 +77,7 @@ export async function POST(req: Request) {
             })
         ]);
 
-        // 5. Backend Logic: Logging & Achievements
-        await logActivity(session.user.id, "SUBMIT_QUIZ", { subjectId, score, pointsEarned });
+        // 5. Backend Logic: Achievements
         const unlocked = await processAchievements(session.user.id);
 
         return NextResponse.json({
