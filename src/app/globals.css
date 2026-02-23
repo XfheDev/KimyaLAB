@@ -6,9 +6,11 @@
   --card: rgba(255, 255, 255, 0.7);
   --card-foreground: #0f172a;
   --primary: #4f46e5;
+  --primary-rgb: 79, 70, 229;
   --secondary: #9333ea;
+  --secondary-rgb: 147, 51, 234;
   --accent: #f59e0b;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(0, 0, 0, 0.08);
   --success: #10b981;
   --danger: #ef4444;
 }
@@ -19,9 +21,11 @@
   --card: rgba(15, 23, 42, 0.8);
   --card-foreground: #f1f5f9;
   --primary: #818cf8;
+  --primary-rgb: 129, 140, 248;
   --secondary: #c084fc;
+  --secondary-rgb: 192, 132, 252;
   --accent: #fbbf24;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.06);
   --success: #34d399;
   --danger: #f87171;
 }
@@ -46,14 +50,31 @@ body {
   color: var(--foreground);
   font-family: var(--font-outfit), system-ui, sans-serif;
   transition: background-color 0.5s ease, color 0.5s ease;
+  overflow-x: hidden;
 }
 
-/* Glassmorphism */
+/* Glassmorphism Variants */
 .glass {
   background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
+}
+
+.glass-morphism {
+  background: rgba(var(--primary-rgb), 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+/* Mesh Gradient Background */
+.mesh-gradient {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(var(--primary-rgb), 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(var(--secondary-rgb), 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(var(--primary-rgb), 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(var(--secondary-rgb), 0.15) 0px, transparent 50%);
 }
 
 /* Custom Scrollbar */
@@ -77,15 +98,15 @@ body {
 
 /* Glow Effects */
 .glow {
-  box-shadow: 0 0 20px 2px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 20px 2px rgba(var(--primary-rgb), 0.15);
 }
 
 .glow-lg {
-  box-shadow: 0 0 40px 8px rgba(79, 70, 229, 0.12);
+  box-shadow: 0 0 40px 8px rgba(var(--primary-rgb), 0.12);
 }
 
 .text-glow {
-  text-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
 }
 
 /* Animations */
@@ -124,32 +145,56 @@ body {
   animation: float 4s ease-in-out infinite;
 }
 
-@keyframes gradient-shift {
+@keyframes liquid {
   0% {
-    background-position: 0% 50%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   }
 
   50% {
-    background-position: 100% 50%;
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
   }
 
   100% {
-    background-position: 0% 50%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   }
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
+.animate-liquid {
+  animation: liquid 8s ease-in-out infinite;
 }
 
-/* Smooth Focus Rings */
+@keyframes wave {
+
+  0%,
+  100% {
+    clip-path: polygon(0% 45%, 16% 44%, 33% 50%, 54% 60%, 70% 61%, 84% 59%, 100% 52%, 100% 100%, 0% 100%);
+  }
+
+  50% {
+    clip-path: polygon(0% 60%, 15% 65%, 34% 66%, 51% 62%, 67% 50%, 84% 45%, 100% 46%, 100% 100%, 0% 100%);
+  }
+}
+
+.animate-wave {
+  animation: wave 4s ease-in-out infinite;
+}
+
+/* Mask for Hero Text */
+.text-mask {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Smooth Transitions */
+.transition-glass {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 input:focus,
 button:focus-visible {
   outline: none;
 }
 
-/* Selection Color */
 ::selection {
   background: var(--primary);
   color: white;

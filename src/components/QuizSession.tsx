@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Trophy, ArrowLeft, RefreshCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
@@ -26,32 +26,28 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     const [isFinished, setIsFinished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState<any>(null);
+    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
     const router = useRouter();
 
     const currentQuestion = questions[currentIdx];
     const progress = ((currentIdx + 1) / questions.length) * 100;
 
-    const handleSelect = (optIdx: number) => {
-        setAnswers((prev) => ({ ...prev, [currentIdx]: optIdx }));
-    };
-
-    const calculateScore = () => {
+    const stats = useMemo(() => {
         let correct = 0;
         questions.forEach((q, idx) => {
             if (answers[idx] === q.correctOption) correct++;
         });
-        return {
-            correct,
-            total: questions.length,
-            wrong: questions.length - correct,
-            score: Math.round((correct / questions.length) * 100),
-        };
+        const total = questions.length;
+        const score = Math.round((correct / total) * 100);
+        return { correct, total, wrong: total - correct, score };
+    }, [answers, questions]);
+
+    const handleSelect = (optIdx: number) => {
+        setAnswers((prev) => ({ ...prev, [currentIdx]: optIdx }));
     };
 
     const handleFinish = async () => {
         setSubmitting(true);
-        const stats = calculateScore();
-
         try {
             const res = await fetch("/api/submit", {
                 method: "POST",
@@ -66,12 +62,16 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
             setIsFinished(true);
 
             if (stats.score >= 80) {
-                confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#00ff00', '#0000ff', '#ff0000', '#ffff00']
-                });
+                const duration = 3 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                const interval: any = setInterval(function () {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti({ ...defaults, particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } });
+                }, 250);
             }
         } catch (error) {
             console.error("Submission failed:", error);
@@ -80,137 +80,158 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
         }
     };
 
+    const nextQuestion = () => {
+        if (currentIdx < questions.length - 1) {
+            setDirection(1);
+            setCurrentIdx(prev => prev + 1);
+        }
+    };
 
+    const prevQuestion = () => {
+        if (currentIdx > 0) {
+            setDirection(-1);
+            setCurrentIdx(prev => prev - 1);
+        }
+    };
 
     if (isFinished) {
-        const stats = calculateScore();
         return (
-            <div className="max-w-3xl w-full flex flex-col gap-8 animate-in fade-in zoom-in duration-500 pb-20">
-                <div className="glass rounded-[2.5rem] p-10 text-center border-none shadow-2xl shadow-primary/10">
-                    <div className="flex justify-center mb-8">
-                        <div className="p-6 bg-emerald-500/20 rounded-full shadow-lg shadow-emerald-500/20">
-                            <CheckCircle2 className="h-16 w-16 text-emerald-500" />
-                        </div>
-                    </div>
-                    <h2 className="text-4xl font-black text-foreground mb-2">Test Tamamlandı!</h2>
-                    <p className="text-foreground/60 font-medium text-lg mb-10">{subjectName}</p>
+            <div className="max-w-4xl w-full mx-auto pb-24">
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-morphism rounded-[3rem] p-8 md:p-12 text-center relative overflow-hidden shadow-2xl shadow-primary/10"
+                >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/20 blur-[120px] rounded-full -z-10" />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div className="p-8 bg-emerald-500/10 rounded-3xl border border-emerald-500/20">
-                            <p className="text-xs text-emerald-500 font-black uppercase tracking-widest mb-2">Doğru</p>
-                            <p className="text-4xl font-black text-emerald-500">{stats.correct}</p>
-                        </div>
-                        <div className="p-8 bg-red-500/10 rounded-3xl border border-red-500/20">
-                            <p className="text-xs text-red-500 font-black uppercase tracking-widest mb-2">Yanlış</p>
-                            <p className="text-4xl font-black text-red-500">{stats.wrong}</p>
-                        </div>
-                        <div className="p-8 bg-primary/10 rounded-3xl border border-primary/20">
-                            <p className="text-xs text-primary font-black uppercase tracking-widest mb-2">Puan</p>
-                            <p className="text-4xl font-black text-primary">{stats.score}</p>
-                        </div>
-                    </div>
-
-                    <div className="mt-12 bg-foreground/5 rounded-3xl p-6 border border-border-theme/50 relative overflow-hidden">
-                        <motion.div
-                            initial={{ y: 0, opacity: 0 }}
-                            animate={{ y: -50, opacity: [0, 1, 0] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                        >
-                            <span className="text-4xl font-black text-primary/20">+{stats.score * 10} XP</span>
-                        </motion.div>
-
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                            <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                            <p className="text-sm font-bold text-foreground/40">Kazandığın Tecrübe</p>
-                        </div>
-                        <p className="text-3xl font-black text-primary text-glow">+{stats.score * 10} XP</p>
-                        {result?.streak && (
-                            <motion.div
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                className="mt-3 flex items-center justify-center gap-1.5 text-orange-500 bg-orange-500/5 py-2 px-4 rounded-2xl w-fit mx-auto border border-orange-500/10"
-                            >
-                                <span className="text-xl">🔥</span>
-                                <span className="font-black text-sm uppercase tracking-wider">{result.streak} GÜNLÜK SERİ!</span>
-                            </motion.div>
-                        )}
-                    </div>
-
-                    <button
-                        onClick={() => router.push("/")}
-                        className="mt-10 w-full py-5 bg-primary text-white rounded-[1.5rem] font-black hover:opacity-90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-primary/30 text-lg"
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", damping: 15, stiffness: 200 }}
+                        className="inline-flex items-center justify-center p-6 bg-gradient-to-br from-primary to-secondary rounded-3xl shadow-2xl shadow-primary/40 mb-8"
                     >
-                        Ana Sayfaya Dön
-                    </button>
-                </div>
+                        <Trophy className="h-16 w-16 text-white" />
+                    </motion.div>
 
-                <div className="space-y-6">
-                    <div className="flex items-center gap-3 px-4">
-                        <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h3 className="text-xl font-black uppercase tracking-widest text-foreground">Soru İncelemesi</h3>
+                    <h2 className="text-4xl md:text-5xl font-black text-foreground mb-4">Mükemmel İş!</h2>
+                    <p className="text-foreground/50 font-bold text-xl mb-12 uppercase tracking-widest">{subjectName}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        {[
+                            { label: "Doğru", val: stats.correct, color: "text-success", bg: "bg-success/10", border: "border-success/20" },
+                            { label: "Yanlış", val: stats.wrong, color: "text-danger", bg: "bg-danger/10", border: "border-danger/20" },
+                            { label: "Başarı", val: `%${stats.score}`, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" }
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2 + i * 0.1 }}
+                                className={cn("p-10 rounded-[2.5rem] border border-transparent transition-glass hover:scale-105", stat.bg, stat.border)}
+                            >
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 mb-3">{stat.label}</p>
+                                <p className={cn("text-5xl font-black", stat.color)}>{stat.val}</p>
+                            </motion.div>
+                        ))}
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="bg-foreground/5 rounded-[2.5rem] p-10 border border-border-theme/40 relative group overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-center gap-2 mb-4">
+                                <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+                                <span className="font-black text-foreground/40 uppercase tracking-widest text-xs">Toplam Kazanılan Tecrübe</span>
+                            </div>
+                            <div className="flex items-baseline justify-center gap-2">
+                                <span className="text-6xl font-black text-primary text-glow">+{stats.score * 10}</span>
+                                <span className="text-2xl font-black text-secondary">XP</span>
+                            </div>
+                            {result?.streak && (
+                                <motion.div
+                                    animate={{ scale: [1, 1.05, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="mt-8 inline-flex items-center gap-3 bg-orange-500/10 text-orange-500 py-3 px-6 rounded-2xl border border-orange-500/20 shadow-lg shadow-orange-500/5 font-black uppercase text-sm tracking-wider"
+                                >
+                                    🔥 {result.streak} GÜNLÜK SERİ!
+                                </motion.div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="mt-12 flex flex-col sm:flex-row gap-4">
+                        <button
+                            onClick={() => router.push("/")}
+                            className="flex-1 py-6 bg-foreground text-background dark:bg-white dark:text-black rounded-[2rem] font-black text-lg transition-glass hover:opacity-90 hover:scale-[1.02] shadow-xl active:scale-95"
+                        >
+                            Ana Sayfaya Dön
+                        </button>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="w-full sm:w-24 flex items-center justify-center bg-foreground/5 py-6 rounded-[2rem] border border-border-theme/50 transition-glass hover:bg-foreground/10 active:scale-95"
+                        >
+                            <RefreshCcw className="h-8 w-8 text-foreground" />
+                        </button>
+                    </div>
+                </motion.div>
+
+                {/* Question Review Section */}
+                <div className="mt-20 space-y-8">
+                    <div className="flex items-center gap-4 px-2">
+                        <div className="h-2 w-12 bg-primary rounded-full" />
+                        <h3 className="text-2xl font-black uppercase tracking-widest">Soru Gözlem</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
                         {questions.map((q, idx) => {
                             const userAnswer = answers[idx];
                             const isCorrect = userAnswer === q.correctOption;
                             return (
                                 <motion.div
                                     key={q.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
                                     className={cn(
-                                        "glass p-8 rounded-[2rem] border-l-8 transition-all overflow-hidden relative",
-                                        isCorrect ? "border-l-emerald-500" : "border-l-red-500"
+                                        "glass p-8 rounded-[2.5rem] border-l-[12px] group relative overflow-hidden",
+                                        isCorrect ? "border-l-success" : "border-l-danger"
                                     )}
                                 >
-                                    <div className="absolute top-0 right-0 p-4 opacity-5">
-                                        {isCorrect ? (
-                                            <Check className="h-24 w-24 text-emerald-500" />
-                                        ) : (
-                                            <X className="h-24 w-24 text-red-500" />
-                                        )}
-                                    </div>
-
-                                    <div className="relative z-10">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <span className={cn(
-                                                "w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs",
-                                                isCorrect ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-500"
-                                            )}>
-                                                {idx + 1}
-                                            </span>
-                                            <p className="text-sm font-black text-foreground/40 uppercase tracking-widest">
-                                                {isCorrect ? "Doğru Cevaplandı" : "Hatalı Seçim"}
-                                            </p>
-                                        </div>
-
-                                        <h4 className="text-xl font-bold text-foreground mb-6 leading-relaxed">
-                                            {q.text}
-                                        </h4>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className={cn(
-                                                "p-4 rounded-2xl border flex flex-col gap-1",
-                                                isCorrect ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20"
-                                            )}>
-                                                <p className="text-[10px] font-black uppercase text-foreground/30">Senin Cevabın</p>
-                                                <p className={cn("font-bold text-lg", isCorrect ? "text-emerald-500" : "text-red-500")}>
-                                                    {userAnswer !== undefined ? q.options[userAnswer] : "Boş Bırakıldı"}
-                                                </p>
+                                    <div className="flex items-start justify-between gap-6 relative z-10">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <span className={cn(
+                                                    "w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm",
+                                                    isCorrect ? "bg-success/20 text-success" : "bg-danger/20 text-danger"
+                                                )}>
+                                                    {idx + 1}
+                                                </span>
+                                                <span className="text-xs font-black uppercase tracking-widest text-foreground/40">
+                                                    {isCorrect ? "Kusursuz Cevap" : "Gözden Geçir"}
+                                                </span>
                                             </div>
+                                            <p className="text-xl font-bold text-foreground leading-relaxed mb-8">{q.text}</p>
 
-                                            {!isCorrect && (
-                                                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex flex-col gap-1">
-                                                    <p className="text-[10px] font-black uppercase text-foreground/30">Doğru Cevap</p>
-                                                    <p className="text-emerald-500 font-bold text-lg">
-                                                        {q.options[q.correctOption]}
-                                                    </p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className={cn("p-5 rounded-2xl border flex flex-col gap-1", isCorrect ? "bg-success/5 border-success/10" : "bg-danger/5 border-danger/10")}>
+                                                    <span className="text-[10px] uppercase font-black opacity-30">Senin Cevabın</span>
+                                                    <span className={cn("font-bold text-lg", isCorrect ? "text-success" : "text-danger")}>
+                                                        {userAnswer !== undefined ? q.options[userAnswer] : "Boş"}
+                                                    </span>
                                                 </div>
-                                            )}
+                                                {!isCorrect && (
+                                                    <div className="p-5 bg-success/5 border border-success/10 rounded-2xl flex flex-col gap-1">
+                                                        <span className="text-[10px] uppercase font-black opacity-30">Doğru Cevap</span>
+                                                        <span className="text-success font-bold text-lg">{q.options[q.correctOption]}</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
+                                        <div className="hidden md:block">
+                                            {isCorrect ? <Check className="h-10 w-10 text-success" /> : <X className="h-10 w-10 text-danger" />}
+                                        </div>
+                                    </div>
+                                    <div className="absolute -bottom-4 -right-4 bg-foreground/5 p-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {isCorrect ? <Check className="h-24 w-24 text-success" /> : <X className="h-24 w-24 text-danger" />}
                                     </div>
                                 </motion.div>
                             );
@@ -222,93 +243,151 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
     }
 
     return (
-        <div className="max-w-3xl w-full">
-            <div className="mb-10">
-                <div className="flex justify-between items-end mb-4">
-                    <div>
-                        <p className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-1">Kimya Testi</p>
-                        <h1 className="text-2xl font-black text-foreground">{subjectName}</h1>
+        <div className="max-w-4xl w-full mx-auto">
+            {/* Liquid Progress Bar Section */}
+            <div className="mb-12 glass p-4 rounded-[2.5rem] border border-border-theme/30 backdrop-blur-3xl shadow-xl">
+                <div className="flex justify-between items-center px-4 mb-4">
+                    <button onClick={() => router.back()} className="p-3 bg-foreground/5 rounded-2xl hover:bg-foreground/10 transition-colors border border-border-theme/30">
+                        <ArrowLeft className="h-5 w-5" />
+                    </button>
+                    <div className="text-center">
+                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Meydan Okuma</p>
+                        <h1 className="text-2xl font-black text-foreground truncate max-w-[200px] md:max-w-md">{subjectName}</h1>
                     </div>
-                    <span className="text-lg font-black text-primary">
-                        {currentIdx + 1} <span className="text-foreground/20">/</span> {questions.length}
-                    </span>
+                    <div className="bg-primary/10 px-4 py-2 rounded-2xl border border-primary/20">
+                        <span className="text-lg font-black text-primary">{currentIdx + 1}</span>
+                        <span className="text-foreground/20 font-black mx-1">/</span>
+                        <span className="text-foreground/40 font-bold">{questions.length}</span>
+                    </div>
                 </div>
-                <div className="w-full bg-foreground/10 rounded-full h-3 p-[2px]">
-                    <div
-                        className="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-500"
-                        style={{ width: `${progress}%` }}
-                    ></div>
+
+                <div className="relative h-6 bg-foreground/5 rounded-2xl overflow-hidden p-1 border border-border-theme/20 shadow-inner">
+                    <motion.div
+                        className="absolute inset-y-1 left-1 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg shadow-primary/30 relative"
+                        initial={{ width: 0 }}
+                        animate={{ width: `calc(${progress}% - 8px)` }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        {/* Bubbles / Sparkles inside progress */}
+                        <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-white/20 to-transparent overflow-hidden">
+                            <motion.div
+                                animate={{ x: [0, 100], opacity: [0, 1, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="absolute top-1/2 -translate-y-1/2 h-full w-4 bg-white/40 blur-md rotate-12"
+                            />
+                        </div>
+                    </motion.div>
                 </div>
             </div>
 
-            <div className="glass rounded-[2.5rem] p-6 md:p-12 shadow-2xl shadow-primary/5">
-                <div className="flex justify-between items-start gap-4">
-                    <h3 className="text-xl md:text-3xl font-bold text-foreground leading-snug flex-1">
-                        {currentQuestion.text}
-                    </h3>
-                </div>
-
-                <div className="mt-12 space-y-4">
-                    {currentQuestion.options.map((option, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => handleSelect(idx)}
-                            className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-300 flex items-center group relative overflow-hidden ${answers[currentIdx] === idx
-                                ? "border-primary bg-primary/10 shadow-lg shadow-primary/10"
-                                : "border-border-theme hover:border-primary/30 hover:bg-foreground/5"
-                                }`}
-                        >
-                            <div
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center font-black mr-5 transition-colors ${answers[currentIdx] === idx
-                                    ? "bg-primary text-white"
-                                    : "bg-foreground/10 text-foreground/40 group-hover:bg-primary/20 group-hover:text-primary"
-                                    }`}
-                            >
-                                {String.fromCharCode(65 + idx)}
-                            </div>
-                            <span
-                                className={`text-base md:text-xl font-medium transition-colors ${answers[currentIdx] === idx ? "text-foreground" : "text-foreground/80"
-                                    }`}
-                            >
-                                {option}
-                            </span>
-
-                            {answers[currentIdx] === idx && (
-                                <div className="absolute right-6 h-3 w-3 rounded-full bg-primary animate-pulse" />
-                            )}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="mt-12 flex justify-between items-center gap-6">
-                    <button
-                        onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
-                        disabled={currentIdx === 0}
-                        className="p-5 text-foreground/40 hover:bg-foreground/5 rounded-2xl disabled:opacity-0 transition-all border border-border-theme/50"
+            {/* Question Container */}
+            <div className="relative min-h-[500px]">
+                <AnimatePresence mode="wait" custom={direction}>
+                    <motion.div
+                        key={currentIdx}
+                        custom={direction}
+                        variants={{
+                            enter: (d) => ({ x: d > 0 ? 100 : -100, opacity: 0, scale: 0.95 }, { duration: 0.4 }),
+                            center: { x: 0, opacity: 1, scale: 1 },
+                            exit: (d) => ({ x: d > 0 ? -100 : 100, opacity: 0, scale: 0.95 }, { duration: 0.4 })
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        className="glass rounded-[3rem] p-8 md:p-14 shadow-2xl shadow-primary/10 border-border-theme/40 relative"
                     >
-                        <ChevronLeft className="h-7 w-7" />
-                    </button>
+                        <div className="absolute -top-6 -left-6 w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-[1.5rem] flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-primary/30">
+                            {currentIdx + 1}
+                        </div>
 
-                    {currentIdx === questions.length - 1 ? (
-                        <button
-                            onClick={handleFinish}
-                            disabled={submitting || answers[currentIdx] === undefined}
-                            className="flex-1 py-5 bg-primary text-white rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all shadow-2xl shadow-primary/30 text-lg"
-                        >
-                            <Flag className="h-6 w-6" />
-                            Testi Bitir
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setCurrentIdx((i) => Math.min(questions.length - 1, i + 1))}
-                            disabled={answers[currentIdx] === undefined}
-                            className="flex-1 py-5 bg-primary text-white rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all shadow-2xl shadow-primary/30 text-lg"
-                        >
-                            Sonraki Soru
-                            <ChevronRight className="h-6 w-6" />
-                        </button>
-                    )}
-                </div>
+                        <div className="mb-12">
+                            <motion.p
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-2xl md:text-4xl font-black text-foreground leading-[1.3] text-mask"
+                            >
+                                {currentQuestion.text}
+                            </motion.p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {currentQuestion.options.map((option, idx) => {
+                                const isSelected = answers[currentIdx] === idx;
+                                return (
+                                    <motion.button
+                                        key={idx}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.3 + idx * 0.1 }}
+                                        onClick={() => handleSelect(idx)}
+                                        className={cn(
+                                            "w-full text-left p-6 md:p-8 rounded-[2rem] border-2 transition-all duration-300 flex items-center group relative overflow-hidden",
+                                            isSelected
+                                                ? "border-primary bg-primary/10 shadow-xl shadow-primary/10"
+                                                : "border-border-theme/40 hover:border-primary/40 hover:bg-foreground/5"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-2xl flex items-center justify-center font-black mr-6 transition-all duration-300 shadow-md",
+                                            isSelected
+                                                ? "bg-primary text-white scale-110 rotate-3"
+                                                : "bg-foreground/5 text-foreground/40 group-hover:bg-primary/20 group-hover:text-primary group-hover:rotate-6"
+                                        )}>
+                                            {String.fromCharCode(65 + idx)}
+                                        </div>
+                                        <span className={cn(
+                                            "text-lg md:text-2xl font-bold transition-colors",
+                                            isSelected ? "text-foreground" : "text-foreground/70"
+                                        )}>
+                                            {option}
+                                        </span>
+                                        {isSelected && (
+                                            <motion.div
+                                                layoutId="active-indicator"
+                                                className="absolute right-8 h-4 w-4 rounded-full bg-primary glow shadow-primary/50"
+                                            />
+                                        )}
+                                    </motion.button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mt-14 flex items-center gap-6">
+                            <button
+                                onClick={prevQuestion}
+                                disabled={currentIdx === 0}
+                                className="p-6 text-foreground/40 hover:bg-foreground/5 rounded-3xl disabled:opacity-0 transition-glass border border-border-theme/50 active:scale-90"
+                            >
+                                <ChevronLeft className="h-8 w-8" />
+                            </button>
+
+                            {currentIdx === questions.length - 1 ? (
+                                <button
+                                    onClick={handleFinish}
+                                    disabled={submitting || answers[currentIdx] === undefined}
+                                    className="flex-1 py-6 bg-gradient-to-r from-primary to-secondary text-white rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/40 text-xl"
+                                >
+                                    {submitting ? <RefreshCcw className="h-7 w-7 animate-spin" /> : (
+                                        <>
+                                            <Flag className="h-7 w-7" />
+                                            Analizi Bitir
+                                        </>
+                                    )}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={nextQuestion}
+                                    disabled={answers[currentIdx] === undefined}
+                                    className="flex-1 py-6 bg-foreground text-background dark:bg-white dark:text-black rounded-[2rem] font-black flex items-center justify-center gap-4 transition-glass hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl text-xl"
+                                >
+                                    Sıradaki Adım
+                                    <ChevronRight className="h-7 w-7" />
+                                </button>
+                            )}
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
             </div>
         </div>
     );
