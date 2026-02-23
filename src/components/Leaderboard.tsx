@@ -36,16 +36,16 @@ export default function Leaderboard() {
     );
 
     return (
-        <div className="glass-morphism rounded-[3rem] p-10 shadow-2xl border border-primary/20 relative overflow-hidden group">
+        <div className="glass-morphism rounded-[2.5rem] md:rounded-[3rem] p-6 md:p-10 shadow-2xl border border-primary/20 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-universal" />
 
-            <div className="flex items-center gap-4 mb-10">
-                <div className="p-4 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-xl shadow-primary/20">
-                    <Trophy className="h-8 w-8 text-white" />
+            <div className="flex items-center gap-4 mb-8 md:mb-10">
+                <div className="p-3 md:p-4 bg-gradient-to-br from-primary to-secondary rounded-xl md:rounded-2xl shadow-xl shadow-primary/20">
+                    <Trophy className="h-6 w-6 md:h-8 md:w-8 text-white" />
                 </div>
                 <div>
-                    <h3 className="text-2xl font-black uppercase tracking-[0.3em] text-foreground">Kozmik Sıralama</h3>
-                    <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] mt-1">En İyi Simülatör Operatörleri</p>
+                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-foreground">Kozmik Sıralama</h3>
+                    <p className="text-[9px] md:text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] mt-1">En İyi Operatörler</p>
                 </div>
             </div>
 
@@ -61,17 +61,17 @@ export default function Leaderboard() {
                                 transition={{ delay: idx * 0.1, ease: "easeOut" }}
                                 onMouseEnter={() => isTopThree && playSFX('click')}
                                 className={cn(
-                                    "group/item relative flex items-center justify-between p-6 rounded-[2rem] border transition-universal overflow-hidden",
-                                    idx === 0 ? "bg-amber-500/10 border-amber-500/30 aura-accent scale-[1.05] z-10" :
+                                    "group/item relative flex items-center justify-between p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border transition-universal overflow-hidden",
+                                    idx === 0 ? "bg-amber-500/10 border-amber-500/30 aura-accent scale-[1.02] md:scale-[1.05] z-10" :
                                         idx === 1 ? "bg-slate-400/10 border-slate-400/30" :
                                             idx === 2 ? "bg-amber-800/10 border-amber-800/30" :
                                                 "bg-foreground/5 border-transparent hover:border-primary/20 hover:bg-primary/5"
                                 )}
                             >
-                                <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-4 md:gap-6">
                                     <div className="relative">
                                         <div className={cn(
-                                            "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-2xl transition-universal group-hover/item:scale-110 group-hover/item:rotate-6",
+                                            "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-lg md:text-xl shadow-2xl transition-universal group-hover/item:scale-110 group-hover/item:rotate-6",
                                             idx === 0 ? "bg-gradient-to-br from-amber-400 to-amber-600 text-white" :
                                                 idx === 1 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-white" :
                                                     idx === 2 ? "bg-gradient-to-br from-amber-700 to-amber-900 text-white" :
@@ -89,19 +89,19 @@ export default function Leaderboard() {
                                             </motion.div>
                                         )}
                                     </div>
-                                    <div>
-                                        <p className="text-lg font-black text-foreground group-hover/item:text-primary transition-colors">{user.name || "İsimsiz Operatör"}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-base md:text-lg font-black text-foreground group-hover/item:text-primary transition-colors truncate max-w-[100px] md:max-w-none">{user.name || "Operatör"}</p>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-black uppercase text-foreground/30 tracking-widest px-2 py-0.5 bg-foreground/5 rounded-md">Seviye {user.level}</span>
-                                            {idx === 0 && <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />}
+                                            <span className="text-[9px] md:text-[10px] font-black uppercase text-foreground/30 tracking-widest px-2 py-0.5 bg-foreground/5 rounded-md">Lv. {user.level}</span>
+                                            {idx === 0 && <span className="flex h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right shrink-0 ml-4">
                                     <div className="flex items-center justify-end gap-1">
-                                        {idx === 0 && <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />}
-                                        <p className="text-xl font-black text-primary group-hover/item:scale-110 transition-transform">{user.points}</p>
-                                        <span className="text-[10px] font-black text-secondary">XP</span>
+                                        {idx === 0 && <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-amber-500 animate-pulse" />}
+                                        <p className="text-lg md:text-xl font-black text-primary group-hover/item:scale-110 transition-transform">{user.points}</p>
+                                        <span className="text-[9px] md:text-[10px] font-black text-secondary">XP</span>
                                     </div>
                                     {idx < 3 && <Medal className={cn("h-5 w-5 ml-auto mt-2",
                                         idx === 0 ? "text-amber-500" :

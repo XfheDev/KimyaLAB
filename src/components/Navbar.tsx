@@ -27,18 +27,18 @@ export default function Navbar({ user }: NavbarProps) {
     const progressToNextLevel = (pointsInCurrentLevel / 1000) * 100;
 
     return (
-        <nav className="glass sticky top-4 z-50 mx-4 sm:mx-8 rounded-[2rem] border border-border-theme/40 mt-4 overflow-visible">
-            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <nav className="glass sticky top-4 z-50 mx-4 sm:mx-8 rounded-3xl md:rounded-[2rem] border border-border-theme/40 mt-4 overflow-visible">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                 {/* Logo Section */}
-                <Link href="/" className="flex items-center gap-3 group">
+                <Link href="/" className="flex items-center gap-2 md:gap-3 group">
                     <motion.div
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-2.5 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg shadow-primary/25"
+                        className="p-2 md:p-2.5 bg-gradient-to-br from-primary to-secondary rounded-xl md:rounded-2xl shadow-lg shadow-primary/25"
                     >
-                        <BookOpen className="h-6 w-6 text-white" />
+                        <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </motion.div>
-                    <span className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary group-hover:opacity-80 transition-opacity">
+                    <span className="text-xl md:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary group-hover:opacity-80 transition-opacity">
                         KimyaLAB
                     </span>
                 </Link>
@@ -156,13 +156,13 @@ export default function Navbar({ user }: NavbarProps) {
                 </div>
 
                 {/* Mobile Icons */}
-                <div className="flex items-center gap-2 lg:hidden">
+                <div className="flex items-center gap-1 md:gap-2 lg:hidden">
                     <ThemeToggle />
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="p-3 bg-foreground/5 text-foreground rounded-2xl active:scale-90 transition-all border border-border-theme"
+                        className="p-2.5 md:p-3 bg-foreground/5 text-foreground rounded-xl md:rounded-2xl active:scale-90 transition-all border border-border-theme"
                     >
-                        {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        {isMenuOpen ? <X className="h-5 w-5 md:h-6 md:w-6" /> : <Menu className="h-5 w-5 md:h-6 md:w-6" />}
                     </button>
                 </div>
             </div>
@@ -174,7 +174,7 @@ export default function Navbar({ user }: NavbarProps) {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="lg:hidden border-t border-border-theme/20 overflow-hidden bg-background/80 backdrop-blur-2xl px-6 pb-6 rounded-b-[2rem]"
+                        className="lg:hidden border-t border-border-theme/20 overflow-hidden bg-background/80 backdrop-blur-2xl px-4 md:px-6 pb-6 rounded-b-3xl md:rounded-b-[2rem]"
                     >
                         <div className="pt-6 space-y-6">
                             {/* Mobile Energy Bar */}
@@ -211,25 +211,25 @@ export default function Navbar({ user }: NavbarProps) {
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2 md:space-y-3">
                                 <Link
                                     href="/settings"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-4 p-5 rounded-3xl bg-foreground/5 active:bg-foreground/10 transition-colors"
+                                    className="flex items-center gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-foreground/5 active:bg-foreground/10 transition-colors"
                                 >
-                                    <div className="p-3 bg-primary/20 rounded-2xl">
-                                        <Settings className="h-6 w-6 text-primary" />
+                                    <div className="p-2.5 md:p-3 bg-primary/20 rounded-xl md:rounded-2xl">
+                                        <Settings className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                                     </div>
-                                    <span className="font-black text-lg">Hesap Ayarları</span>
+                                    <span className="font-black text-base md:text-lg">Hesap Ayarları</span>
                                 </Link>
                                 <button
                                     onClick={() => signOut()}
-                                    className="w-full flex items-center gap-4 p-5 rounded-3xl bg-red-500/5 active:bg-red-500/10 transition-colors text-red-500"
+                                    className="w-full flex items-center gap-4 p-4 md:p-5 rounded-2xl md:rounded-3xl bg-red-500/5 active:bg-red-500/10 transition-colors text-red-500"
                                 >
-                                    <div className="p-3 bg-red-500/20 rounded-2xl">
-                                        <LogOut className="h-6 w-6" />
+                                    <div className="p-2.5 md:p-3 bg-red-500/20 rounded-xl md:rounded-2xl">
+                                        <LogOut className="h-5 w-5 md:h-6 md:w-6" />
                                     </div>
-                                    <span className="font-black text-lg text-left">Oturumu Kapat</span>
+                                    <span className="font-black text-base md:text-lg text-left">Oturumu Kapat</span>
                                 </button>
                             </div>
                         </div>

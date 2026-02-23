@@ -147,23 +147,23 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="glass-morphism rounded-[4rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl border-primary/20"
+                    className="glass-morphism rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-20 text-center relative overflow-hidden shadow-2xl border-primary/20"
                 >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 blur-[150px] rounded-full -z-10" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/20 blur-[100px] md:blur-[150px] rounded-full -z-10" />
 
                     <motion.div
                         initial={{ rotate: -20, scale: 0 }}
                         animate={{ rotate: 0, scale: 1 }}
                         transition={{ type: "spring", damping: 12, stiffness: 200 }}
-                        className="inline-flex items-center justify-center p-8 bg-gradient-to-br from-primary via-secondary to-accent rounded-[3rem] shadow-2xl shadow-primary/40 mb-12"
+                        className="inline-flex items-center justify-center p-6 md:p-8 bg-gradient-to-br from-primary via-secondary to-accent rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-primary/40 mb-8 md:mb-12"
                     >
-                        <Trophy className="h-24 w-24 text-white" />
+                        <Trophy className="h-16 w-16 md:h-24 md:w-24 text-white" />
                     </motion.div>
 
-                    <h2 className="text-5xl md:text-7xl font-black text-foreground mb-6 tracking-tight">Efsanevi Sonuç!</h2>
-                    <p className="text-primary font-black text-2xl mb-16 uppercase tracking-[0.4em]">{subjectName}</p>
+                    <h2 className="text-4xl md:text-7xl font-black text-foreground mb-4 md:mb-6 tracking-tight">Efsanevi Sonuç!</h2>
+                    <p className="text-primary font-black text-xl md:text-2xl mb-10 md:mb-16 uppercase tracking-[0.4em]">{subjectName}</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-10 md:mb-16">
                         {[
                             { label: "Doğru", val: result?.attempt?.correct || stats.correct, color: "text-success", bg: "bg-success/5", border: "border-success/20" },
                             { label: "Yanlış", val: result?.attempt?.wrong || stats.wrong, color: "text-danger", bg: "bg-danger/5", border: "border-danger/20" },
@@ -174,24 +174,24 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 + i * 0.1 }}
-                                className={cn("p-12 rounded-[3rem] border transition-universal hover:scale-105 hover:bg-white/5", stat.bg, stat.border)}
+                                className={cn("p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border transition-universal hover:scale-105 hover:bg-white/5", stat.bg, stat.border)}
                             >
-                                <p className="text-xs font-black uppercase tracking-[0.3em] text-foreground/30 mb-4">{stat.label}</p>
-                                <p className={cn("text-6xl font-black", stat.color)}>{stat.val}</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-2 md:mb-4">{stat.label}</p>
+                                <p className={cn("text-4xl md:text-6xl font-black", stat.color)}>{stat.val}</p>
                             </motion.div>
                         ))}
                     </div>
 
-                    <div className="bg-foreground/5 rounded-[4rem] p-16 border border-border-theme/40 relative group overflow-hidden mb-16 shadow-inner">
+                    <div className="bg-foreground/5 rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-16 border border-border-theme/40 relative group overflow-hidden mb-12 md:mb-16 shadow-inner">
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                         <div className="relative z-10">
-                            <div className="flex items-center justify-center gap-4 mb-6">
-                                <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-                                <span className="font-black text-foreground/40 uppercase tracking-[0.4em] text-sm">Kozmik Tecrübe Kazancı</span>
+                            <div className="flex items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
+                                <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-primary animate-pulse" />
+                                <span className="font-black text-foreground/40 uppercase tracking-[0.4em] text-[10px] md:text-sm">Kozmik Tecrübe Kazancı</span>
                             </div>
-                            <div className="flex items-baseline justify-center gap-4">
-                                <span className="text-8xl font-black text-primary text-glow">+{result?.pointsEarned || 0}</span>
-                                <span className="text-4xl font-black text-secondary">XP</span>
+                            <div className="flex items-baseline justify-center gap-3 md:gap-4">
+                                <span className="text-6xl md:text-8xl font-black text-primary text-glow">+{result?.pointsEarned || 0}</span>
+                                <span className="text-2xl md:text-4xl font-black text-secondary">XP</span>
                             </div>
                         </div>
                     </div>
@@ -234,32 +234,32 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         isCorrect ? "border-l-success aura-primary" : "border-l-danger aura-accent"
                                     )}
                                 >
-                                    <div className="flex items-start justify-between gap-10 relative z-10">
+                                    <div className="flex items-start justify-between gap-6 md:gap-10 relative z-10">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-4 mb-8">
+                                            <div className="flex items-center gap-4 mb-6 md:mb-8">
                                                 <span className={cn(
-                                                    "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-xl",
+                                                    "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-lg md:text-xl shadow-xl",
                                                     isCorrect ? "bg-success text-white" : "bg-danger text-white"
                                                 )}>
                                                     {idx + 1}
                                                 </span>
-                                                <span className="text-xs font-black uppercase tracking-[0.3em] text-foreground/40">
+                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
                                                     {isCorrect ? "Moleküler Uyum" : "Hatalı Bağlanma"}
                                                 </span>
                                             </div>
-                                            <p className="text-2xl md:text-3xl font-black text-foreground leading-[1.3] mb-12">{q.text}</p>
+                                            <p className="text-xl md:text-3xl font-black text-foreground leading-[1.3] mb-8 md:mb-12">{q.text}</p>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                <div className={cn("p-8 rounded-[2rem] border-2 flex flex-col gap-2", isCorrect ? "bg-success/5 border-success/20" : "bg-danger/5 border-danger/20")}>
-                                                    <span className="text-[10px] uppercase font-black opacity-30 tracking-widest">Senin Seçimin</span>
-                                                    <span className={cn("font-black text-xl", isCorrect ? "text-success" : "text-danger")}>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                                <div className={cn("p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-2 flex flex-col gap-1 md:gap-2", isCorrect ? "bg-success/5 border-success/20" : "bg-danger/5 border-danger/20")}>
+                                                    <span className="text-[9px] md:text-[10px] uppercase font-black opacity-30 tracking-widest">Senin Seçimin</span>
+                                                    <span className={cn("font-black text-lg md:text-xl", isCorrect ? "text-success" : "text-danger")}>
                                                         {userAnswer !== undefined ? q.options[userAnswer] : "Boş"}
                                                     </span>
                                                 </div>
                                                 {!isCorrect && (
-                                                    <div className="p-8 bg-success/5 border-2 border-success/20 rounded-[2rem] flex flex-col gap-2">
-                                                        <span className="text-[10px] uppercase font-black opacity-30 tracking-widest">Kararlı Yapı (Doğru)</span>
-                                                        <span className="text-success font-black text-xl">{q.options[q.correctOption]}</span>
+                                                    <div className="p-6 md:p-8 bg-success/5 border-2 border-success/20 rounded-[1.5rem] md:rounded-[2rem] flex flex-col gap-1 md:gap-2">
+                                                        <span className="text-[9px] md:text-[10px] uppercase font-black opacity-30 tracking-widest">Kararlı Yapı (Doğru)</span>
+                                                        <span className="text-success font-black text-lg md:text-xl">{q.options[q.correctOption]}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -318,25 +318,25 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
             </AnimatePresence>
 
             {/* Universal Progress Section */}
-            <div className="mb-20 glass-morphism p-8 rounded-[4rem] border-primary/20 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+            <div className="mb-12 md:mb-20 glass-morphism p-6 md:p-8 rounded-[2.5rem] md:rounded-[4rem] border-primary/20 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full" />
 
-                <div className="flex justify-between items-center relative z-10 px-4 mb-8">
-                    <button onClick={() => { playSFX('click'); router.back(); }} className="p-5 bg-foreground/5 rounded-3xl hover:bg-foreground/10 transition-universal border border-border-theme/30 shadow-lg">
-                        <ArrowLeft className="h-6 w-6" />
+                <div className="flex justify-between items-center relative z-10 px-2 md:px-4 mb-6 md:mb-8">
+                    <button onClick={() => { playSFX('click'); router.back(); }} className="p-4 md:p-5 bg-foreground/5 rounded-2xl md:rounded-3xl hover:bg-foreground/10 transition-universal border border-border-theme/30 shadow-lg">
+                        <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
                     </button>
                     <div className="text-center">
-                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-2">Simülasyon Seansı</p>
-                        <h1 className="text-3xl font-black text-foreground">{subjectName}</h1>
+                        <p className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.3em] md:tracking-[0.5em] mb-1 md:mb-2">Simülasyon Seansı</p>
+                        <h1 className="text-xl md:text-3xl font-black text-foreground truncate max-w-[150px] md:max-w-none">{subjectName}</h1>
                     </div>
-                    <div className="bg-primary/10 px-6 py-3 rounded-3xl border border-primary/20 shadow-inner">
-                        <span className="text-2xl font-black text-primary">{currentIdx + 1}</span>
-                        <span className="text-foreground/20 font-black mx-2 text-xl">/</span>
-                        <span className="text-foreground/40 font-black text-xl">{questions.length}</span>
+                    <div className="bg-primary/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl md:rounded-3xl border border-primary/20 shadow-inner">
+                        <span className="text-xl md:text-2xl font-black text-primary">{currentIdx + 1}</span>
+                        <span className="text-foreground/20 font-black mx-1 md:mx-2 text-lg md:text-xl">/</span>
+                        <span className="text-foreground/40 font-black text-lg md:text-xl">{questions.length}</span>
                     </div>
                 </div>
 
-                <div className="relative h-10 bg-foreground/5 rounded-[2rem] overflow-hidden p-2 border border-border-theme/20 shadow-2xl">
+                <div className="relative h-6 md:h-10 bg-foreground/5 rounded-full md:rounded-[2rem] overflow-hidden p-1 md:p-2 border border-border-theme/20 shadow-2xl">
                     <motion.div
                         className="absolute inset-y-2 left-2 bg-gradient-to-r from-primary via-secondary to-accent rounded-[1.5rem] shadow-xl relative"
                         initial={{ width: 0 }}
@@ -373,22 +373,22 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                     >
                         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
 
-                        <div className="absolute top-12 left-12 w-20 h-20 bg-gradient-to-br from-primary via-secondary to-accent rounded-[2rem] flex items-center justify-center text-white font-black text-4xl shadow-2xl rotate-3">
+                        <div className="absolute top-8 left-8 md:top-12 md:left-12 w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-primary via-secondary to-accent rounded-2xl md:rounded-[2rem] flex items-center justify-center text-white font-black text-2xl md:text-4xl shadow-2xl rotate-3">
                             {currentIdx + 1}
                         </div>
 
-                        <div className="mb-20 pt-12">
+                        <div className="mb-12 md:mb-20 pt-16 md:pt-12">
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="text-3xl md:text-5xl font-black text-foreground leading-[1.2] tracking-tight"
+                                className="text-2xl md:text-5xl font-black text-foreground leading-[1.2] tracking-tight"
                             >
                                 {currentQuestion.text}
                             </motion.p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-12">
                             {currentQuestion.options.map((option, idx) => {
                                 const isSelected = answers[currentIdx] === idx;
                                 return (
@@ -399,14 +399,14 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         transition={{ delay: 0.4 + idx * 0.1 }}
                                         onClick={() => handleSelect(idx)}
                                         className={cn(
-                                            "w-full text-left p-8 md:p-10 rounded-[3rem] border-4 transition-universal flex items-center group relative overflow-hidden",
+                                            "w-full text-left p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border-2 md:border-4 transition-universal flex items-center group relative overflow-hidden",
                                             isSelected
                                                 ? "border-primary bg-primary/20 shadow-2xl shadow-primary/20 scale-[1.02]"
                                                 : "border-border-theme/40 hover:border-primary/40 hover:bg-white/5"
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-12 h-12 md:w-16 md:h-16 rounded-[1.5rem] flex items-center justify-center font-black mr-6 md:mr-8 transition-universal shadow-2xl grow-0 shrink-0 text-2xl",
+                                            "w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[1.5rem] flex items-center justify-center font-black mr-4 md:mr-8 transition-universal shadow-2xl grow-0 shrink-0 text-lg md:text-2xl",
                                             isSelected
                                                 ? "bg-primary text-white scale-110 rotate-6 shadow-primary/40"
                                                 : "bg-foreground/5 text-foreground/40 group-hover:bg-primary/20 group-hover:text-primary group-hover:rotate-12"
@@ -414,7 +414,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                             {String.fromCharCode(65 + idx)}
                                         </div>
                                         <span className={cn(
-                                            "text-xl md:text-3xl font-black transition-colors flex-1",
+                                            "text-lg md:text-3xl font-black transition-colors flex-1",
                                             isSelected ? "text-foreground" : "text-foreground/60"
                                         )}>
                                             {option}
@@ -422,7 +422,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         {isSelected && (
                                             <motion.div
                                                 layoutId="active-particle"
-                                                className="absolute right-10 h-6 w-6 rounded-full bg-primary aura-primary shadow-[0_0_20px_var(--primary)]"
+                                                className="absolute right-6 md:right-10 h-4 w-4 md:h-6 md:w-6 rounded-full bg-primary aura-primary shadow-[0_0_20px_var(--primary)]"
                                             />
                                         )}
                                     </motion.button>
@@ -434,27 +434,27 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
             </div>
 
             {/* Universal Floating Navigation */}
-            <div className="fixed bottom-10 left-0 right-0 px-8 z-50 lg:relative lg:bottom-auto lg:px-0 lg:mt-20 lg:mb-12">
-                <div className="max-w-5xl mx-auto flex items-center gap-6">
+            <div className="fixed bottom-6 left-0 right-0 px-6 z-50 lg:relative lg:bottom-auto lg:px-0 lg:mt-20 lg:mb-12">
+                <div className="max-w-5xl mx-auto flex items-center gap-4 md:gap-6">
                     <button
                         onClick={prevQuestion}
                         disabled={currentIdx === 0}
-                        className="p-8 bg-glass-morphism backdrop-blur-3xl text-foreground/40 hover:bg-foreground/10 rounded-[2.5rem] disabled:opacity-0 transition-universal border border-border-theme/40 shadow-2xl active:scale-90"
+                        className="p-6 md:p-8 bg-glass-morphism backdrop-blur-3xl text-foreground/40 hover:bg-foreground/10 rounded-2xl md:rounded-[2.5rem] disabled:opacity-0 transition-universal border border-border-theme/40 shadow-2xl active:scale-90"
                     >
-                        <ChevronLeft className="h-10 w-10" />
+                        <ChevronLeft className="h-8 w-8 md:h-10 md:w-10" />
                     </button>
 
                     {currentIdx === questions.length - 1 ? (
                         <button
                             onClick={handleFinish}
                             disabled={submitting || answers[currentIdx] === undefined}
-                            className="flex-1 py-9 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-[3rem] font-black flex items-center justify-center gap-6 transition-universal hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/40 text-2xl"
+                            className="flex-1 py-6 md:py-9 bg-gradient-to-r from-primary via-secondary to-accent text-white rounded-[1.5rem] md:rounded-[3rem] font-black flex items-center justify-center gap-4 md:gap-6 transition-universal hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/40 text-lg md:text-2xl"
                         >
-                            {submitting ? <RefreshCcw className="h-8 w-8 animate-spin" /> : (
+                            {submitting ? <RefreshCcw className="h-6 w-6 md:h-8 md:w-8 animate-spin" /> : (
                                 <>
-                                    <Sparkles className="h-8 w-8" />
-                                    SEANSI TAMAMLA
-                                    <Flag className="h-8 w-8" />
+                                    <Sparkles className="h-6 w-6 md:h-8 md:w-8" />
+                                    SEANSI BİTİR
+                                    <Flag className="h-6 w-6 md:h-8 md:w-8" />
                                 </>
                             )}
                         </button>
@@ -462,10 +462,10 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                         <button
                             onClick={nextQuestion}
                             disabled={answers[currentIdx] === undefined}
-                            className="flex-1 py-9 bg-foreground text-background dark:bg-white dark:text-black rounded-[3rem] font-black flex items-center justify-center gap-6 transition-universal hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl text-2xl"
+                            className="flex-1 py-6 md:py-9 bg-foreground text-background dark:bg-white dark:text-black rounded-[1.5rem] md:rounded-[3rem] font-black flex items-center justify-center gap-4 md:gap-6 transition-universal hover:opacity-90 hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-2xl text-lg md:text-2xl"
                         >
-                            İLERLEMEYE DEVAM ET
-                            <ChevronRight className="h-8 w-8" />
+                            İLERLE
+                            <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
                         </button>
                     )}
                 </div>

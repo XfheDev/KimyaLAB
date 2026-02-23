@@ -33,16 +33,16 @@ export default function UserStats() {
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6">
                 <StatCard
-                    icon={<Target className="text-white" />}
+                    icon={<Target className="text-white h-5 w-5 md:h-6 md:w-6" />}
                     label="Toplam Test"
                     value={safeStats.totalTests || 0}
                     color="bg-primary shadow-primary/20"
                     index={0}
                 />
                 <StatCard
-                    icon={<TrendingUp className="text-white" />}
+                    icon={<TrendingUp className="text-white h-5 w-5 md:h-6 md:w-6" />}
                     label="Ortalama Puan"
                     value={`%${safeStats.avgScore || 0}`}
                     color="bg-secondary shadow-secondary/20"
@@ -54,9 +54,9 @@ export default function UserStats() {
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass p-8 rounded-3xl"
+                    className="glass p-6 md:p-8 rounded-[2rem] md:rounded-3xl"
                 >
-                    <h3 className="text-xl font-black mb-6 flex items-center gap-2">
+                    <h3 className="text-lg md:text-xl font-black mb-6 flex items-center gap-2">
                         <History className="h-5 w-5 text-primary" />
                         Son Denemeler
                     </h3>
@@ -68,15 +68,15 @@ export default function UserStats() {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="flex items-center justify-between p-4 bg-foreground/5 rounded-2xl border border-border-theme hover:border-primary/30 transition-colors"
+                                    className="flex items-center justify-between p-3 md:p-4 bg-foreground/5 rounded-2xl border border-border-theme hover:border-primary/30 transition-colors"
                                 >
-                                    <div>
-                                        <p className="font-bold text-foreground">{attempt.subject?.name || "Konu"}</p>
-                                        <p className="text-xs text-foreground/40 font-medium">{new Date(attempt.date).toLocaleDateString("tr-TR")}</p>
+                                    <div className="flex-1 min-w-0 pr-4">
+                                        <p className="font-bold text-foreground text-sm md:text-base truncate">{attempt.subject?.name || "Konu"}</p>
+                                        <p className="text-[10px] md:text-xs text-foreground/40 font-medium">{new Date(attempt.date).toLocaleDateString("tr-TR")}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-xl font-black text-primary">%{attempt.score}</p>
-                                        <p className="text-[10px] font-black uppercase text-foreground/30">{attempt.correct}D • {attempt.wrong}Y</p>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-lg md:text-xl font-black text-primary">%{attempt.score}</p>
+                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-foreground/30">{attempt.correct}D • {attempt.wrong}Y</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -91,9 +91,9 @@ export default function UserStats() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="glass p-8 rounded-3xl"
+                    className="glass p-6 md:p-8 rounded-[2rem] md:rounded-3xl"
                 >
-                    <h3 className="text-xl font-black mb-6 flex items-center gap-2">
+                    <h3 className="text-lg md:text-xl font-black mb-6 flex items-center gap-2">
                         <Star className="h-5 w-5 text-accent" />
                         Konu Bazlı Başarı
                     </h3>
@@ -105,11 +105,11 @@ export default function UserStats() {
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: idx * 0.1 }}
                             >
-                                <div className="flex justify-between items-end mb-3">
-                                    <p className="font-bold text-foreground/80">{topic.name}</p>
-                                    <p className="text-sm font-black text-primary">%{topic.avgScore}</p>
+                                <div className="flex justify-between items-end mb-2 md:mb-3">
+                                    <p className="font-bold text-foreground/80 text-sm md:text-base">{topic.name}</p>
+                                    <p className="text-xs md:text-sm font-black text-primary">%{topic.avgScore}</p>
                                 </div>
-                                <div className="w-full bg-foreground/10 rounded-full h-3 overflow-hidden p-[2px]">
+                                <div className="w-full bg-foreground/10 rounded-full h-2 md:h-3 overflow-hidden p-[1px] md:p-[2px]">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${Math.round(topic.avgScore || 0)}%` }}
@@ -117,14 +117,14 @@ export default function UserStats() {
                                         className="bg-gradient-to-r from-primary to-secondary h-full rounded-full"
                                     />
                                 </div>
-                                <div className="mt-2 flex items-center justify-between text-[10px] font-black uppercase text-foreground/40 tracking-wider">
-                                    <span>{(topic.count || 0)} test çözüldü</span>
+                                <div className="mt-2 flex items-center justify-between text-[9px] md:text-[10px] font-black uppercase text-foreground/40 tracking-wider">
+                                    <span>{(topic.count || 0)} test</span>
                                     {topic.avgScore > 70 ? (
                                         <span className="flex items-center gap-1 text-primary">
-                                            <Award className="h-3 w-3" /> Uzmanlaşıldı
+                                            <Award className="h-3 w-3" /> Uzman
                                         </span>
                                     ) : (
-                                        <span className="text-foreground/20">Geliştiriliyor</span>
+                                        <span className="text-foreground/20">Gelişiyor</span>
                                     )}
                                 </div>
                             </motion.div>
@@ -142,15 +142,15 @@ function StatCard({ icon, label, value, color, index }: any) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="glass p-6 rounded-3xl border-none shadow-xl shadow-primary/5 flex items-center gap-5 relative overflow-hidden group"
+            className="glass p-4 md:p-6 rounded-[2rem] md:rounded-3xl border-none shadow-xl shadow-primary/5 flex items-center gap-4 md:gap-5 relative overflow-hidden group"
         >
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className={cn("p-4 rounded-2xl shadow-lg", color)}>
+            <div className={cn("p-3 md:p-4 rounded-xl md:rounded-2xl shadow-lg", color)}>
                 {icon}
             </div>
             <div>
-                <p className="text-xs font-black text-foreground/40 uppercase tracking-widest">{label}</p>
-                <p className="text-2xl font-black text-foreground">{value}</p>
+                <p className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">{label}</p>
+                <p className="text-xl md:text-2xl font-black text-foreground">{value}</p>
             </div>
         </motion.div>
     );
