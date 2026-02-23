@@ -1,14 +1,13 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaLibSQL } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 import fs from "fs";
 import path from "path";
 
 const url = process.env.DATABASE_URL || "file:./dev.db";
 const authToken = process.env.TURSO_AUTH_TOKEN;
-const libsql = createClient({ url, authToken });
-const adapter = new PrismaLibSql({ url, authToken });
+const adapter = new PrismaLibSQL({ url, authToken });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
