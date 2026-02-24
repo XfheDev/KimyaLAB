@@ -1,3 +1,5 @@
+"use client";
+
 import { signOut, useSession } from "next-auth/react";
 import { BookOpen, LogOut, Award, Star, Settings, Menu, X, ChevronDown, UserCircle, Zap } from "lucide-react";
 import Link from "next/link";
