@@ -5,11 +5,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { BookOpen, Award, ArrowRight, Search, Sparkles, Target, Zap } from "lucide-react";
 import UserStats from "@/components/UserStats";
-import Leaderboard from "@/components/Leaderboard";
 import DailyQuestion from "@/components/DailyQuestion";
-import SmartFeedback from "@/components/SmartFeedback";
-import SkeletonCard from "@/components/SkeletonCard";
-import NoteSystem from "@/components/NoteSystem";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { useAudio } from "@/components/AudioProvider";
 
@@ -98,7 +94,6 @@ function TiltCard({ children, className, onHover, isLocked = false }: { children
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const { scrollY } = useScroll();
   const yAtoms = useTransform(scrollY, [0, 1000], [0, -200]);
 
@@ -207,8 +202,36 @@ export default function Dashboard() {
               className="xl:col-span-2 space-y-12"
             >
               <DailyQuestion />
-              <SmartFeedback />
-              <NoteSystem />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <Link href="/academy">
+                  <div className="glass-morphism p-10 rounded-[3rem] border border-primary/20 hover:border-primary transition-all group relative overflow-hidden h-full">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <BookOpen className="h-24 w-24" />
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">Eğitim Merkezi</p>
+                    <h3 className="text-3xl font-black mb-4">Akademi</h3>
+                    <p className="text-foreground/40 text-sm leading-relaxed mb-8">Tüm kimya modüllerine buradan ulaşabilir ve deneylerine devam edebilirsin.</p>
+                    <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest">
+                      Keşfetmeye Başla <ArrowRight className="h-4 w-4" />
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/analytics">
+                  <div className="glass-morphism p-10 rounded-[3rem] border border-secondary/20 hover:border-secondary transition-all group relative overflow-hidden h-full">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Zap className="h-24 w-24" />
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-4">Kişisel Gelişim</p>
+                    <h3 className="text-3xl font-black mb-4">Analiz</h3>
+                    <p className="text-foreground/40 text-sm leading-relaxed mb-8">Hangi konularda daha güçlü olduğunu ve moleküler eksiklerini gör.</p>
+                    <div className="flex items-center gap-2 text-secondary font-black text-xs uppercase tracking-widest">
+                      Verileri İncele <ArrowRight className="h-4 w-4" />
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </motion.section>
 
             <motion.section
@@ -218,104 +241,21 @@ export default function Dashboard() {
               className="space-y-12"
             >
               <UserStats />
-              <Leaderboard />
+              <Link href="/leaderboard">
+                <div className="glass-morphism p-8 rounded-[3rem] border border-border-theme/40 hover:bg-foreground/5 transition-all group">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Award className="h-6 w-6 text-accent" />
+                      <span className="font-black uppercase tracking-widest text-xs">Sıralama</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <p className="text-sm text-foreground/50">Diğer kimyagerler arasındaki yerini gör ve zirveye tırman.</p>
+                </div>
+              </Link>
             </motion.section>
           </div>
 
-          <section id="topics" className="relative">
-            <header className="mb-20 flex flex-col lg:flex-row lg:items-end justify-between gap-16">
-              <div className="max-w-3xl">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="h-2 w-24 bg-gradient-to-r from-primary via-secondary to-accent rounded-full" />
-                  <h2 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Kozmik Modüller</h2>
-                </div>
-                <h2 className="text-4xl md:text-7xl font-black mb-6 md:mb-8 leading-tight">Ustalık Yolculuğun</h2>
-                <p className="text-lg md:text-2xl text-foreground/40 font-medium max-w-xl">Bugün moleküler düzeyde hangi konuyu keşfedeceksin?</p>
-              </div>
-
-              <div className="relative group w-full lg:w-auto lg:min-w-[500px]">
-                <div className="absolute inset-y-0 left-0 pl-6 md:pl-8 flex items-center pointer-events-none">
-                  <Search className="h-6 w-6 md:h-8 md:w-8 text-foreground/20 group-focus-within:text-primary transition-colors" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Element ara..."
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-16 md:pl-20 pr-6 md:pr-8 py-6 md:py-8 bg-foreground/5 border-2 border-border-theme/40 rounded-[2rem] md:rounded-[3rem] focus:outline-none focus:border-primary focus:ring-[10px] md:focus:ring-[20px] focus:ring-primary/5 transition-universal font-black text-lg md:text-xl text-foreground placeholder-foreground/10 shadow-2xl"
-                />
-              </div>
-            </header>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              <AnimatePresence mode="popLayout">
-                {loading ? (
-                  Array.from({ length: 6 }).map((_, i) => (
-                    <motion.div key={`skeleton-${i}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <SkeletonCard />
-                    </motion.div>
-                  ))
-                ) : (
-                  (subjects || [])
-                    .filter((s: any) => s.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-                    .map((subject: any, idx: number) => {
-                      return (
-                        <motion.div
-                          key={subject.id}
-                          layout
-                          initial={{ opacity: 0, y: 50 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ duration: 0.5, delay: idx * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                        >
-                          <Link href={`/quiz/${subject.id}`} className="block h-full">
-                            <TiltCard
-                              className="h-full"
-                              onHover={() => changeAccent(subjectStyles[idx % subjectStyles.length])}
-                            >
-                              <div className="relative h-full p-8 md:p-12 glass-morphism rounded-[3rem] md:rounded-[4rem] border border-border-theme/40 group hover:border-primary/60 transition-universal overflow-hidden shadow-2xl">
-                                <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/30 transition-universal" />
-                                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full group-hover:bg-secondary/30 transition-universal" />
-
-                                <div className="relative z-10" style={{ transform: "translateZ(60px)" }}>
-                                  <div className="flex items-center justify-between mb-8 md:mb-12">
-                                    <div className="p-4 md:p-5 bg-gradient-to-br from-primary to-secondary rounded-2xl md:rounded-3xl shadow-2xl shadow-primary/30 group-hover:scale-110 group-hover:rotate-12 transition-universal">
-                                      <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                      <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mb-1 md:mb-2">Atom Sayısı</span>
-                                      <span className="text-2xl md:text-3xl font-black text-foreground/50">{subject._count?.questions || 0}</span>
-                                    </div>
-                                  </div>
-
-                                  <h3 className="text-3xl md:text-4xl font-black mb-4 md:mb-6 group-hover:text-primary transition-colors leading-[1.1]">
-                                    {subject.name}
-                                  </h3>
-
-                                  <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-8 md:mb-12">
-                                    <span className="px-4 md:px-5 py-2 bg-primary/10 text-[9px] md:text-[10px] font-black uppercase text-primary rounded-lg md:rounded-xl border border-primary/10">TYT-ULTRA</span>
-                                    <span className="px-4 md:px-5 py-2 bg-secondary/10 text-[9px] md:text-[10px] font-black uppercase text-secondary rounded-lg md:rounded-xl border border-secondary/10">Kimya</span>
-                                  </div>
-
-                                  <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-border-theme/30 flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                      <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-1">Potansiyel</span>
-                                      <span className="text-xl md:text-2xl font-black text-primary text-glow">+1000 XP</span>
-                                    </div>
-                                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-border-theme/40 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-universal shadow-xl">
-                                      <ArrowRight className="h-6 w-6 md:h-8 md:w-8 text-foreground/20 group-hover:text-white transition-universal group-hover:translate-x-2" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </TiltCard>
-                          </Link>
-                        </motion.div>
-                      );
-                    })
-                )}
-              </AnimatePresence>
-            </div>
-          </section>
         </main>
       </div>
     );

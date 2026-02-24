@@ -26,7 +26,6 @@ model User {
   lastActivity DateTime      @default(now())
   attempts     Attempt[]
   achievements Achievement[]
-  notes        Note[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -47,19 +46,8 @@ model Subject {
   description    String?
   questions      Question[]
   attempts       Attempt[]
-  notes          Note[]
 }
 
-model Note {
-  id        String   @id @default(cuid())
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  subjectId String?
-  subject   Subject? @relation(fields: [subjectId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Question {
   id            String  @id @default(cuid())

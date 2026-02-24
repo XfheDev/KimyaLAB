@@ -43,11 +43,19 @@ export default function Navbar({ user }: NavbarProps) {
                     </span>
                 </Link>
 
-                {/* Level Progress Centerpiece (Desktop Only) */}
-                <div className="hidden xl:flex flex-col items-center gap-2 group cursor-help">
+                {/* Desktop Navigation Links */}
+                <div className="hidden lg:flex items-center gap-6">
+                    <Link href="/" className="text-sm font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors">Ana Üs</Link>
+                    <Link href="/academy" className="text-sm font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors">Akademi</Link>
+                    <Link href="/leaderboard" className="text-sm font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors">Sıralama</Link>
+                    <Link href="/analytics" className="text-sm font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors">Analiz</Link>
+                </div>
+
+                {/* Level Progress Centerpiece (Desktop Only - Repositioned) */}
+                <div className="hidden 2xl:flex flex-col items-center gap-2 group cursor-help">
                     <div className="flex items-center gap-2">
                         <Zap className="h-3 w-3 text-accent animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Enerji Seviyesi</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Enerji</span>
                     </div>
                     <div className="w-48 h-2 bg-foreground/5 rounded-full overflow-hidden border border-border-theme/20 shadow-inner">
                         <motion.div
@@ -190,6 +198,14 @@ export default function Navbar({ user }: NavbarProps) {
                                         className="h-full bg-primary"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Mobile Nav Links */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <Link href="/" onClick={() => setIsMenuOpen(false)} className="p-4 bg-foreground/5 rounded-2xl border border-border-theme/30 text-center font-black text-xs uppercase tracking-widest">Ana Üs</Link>
+                                <Link href="/academy" onClick={() => setIsMenuOpen(false)} className="p-4 bg-foreground/5 rounded-2xl border border-border-theme/30 text-center font-black text-xs uppercase tracking-widest">Akademi</Link>
+                                <Link href="/leaderboard" onClick={() => setIsMenuOpen(false)} className="p-4 bg-foreground/5 rounded-2xl border border-border-theme/30 text-center font-black text-xs uppercase tracking-widest">Sıralama</Link>
+                                <Link href="/analytics" onClick={() => setIsMenuOpen(false)} className="p-4 bg-foreground/5 rounded-2xl border border-border-theme/30 text-center font-black text-xs uppercase tracking-widest">Analiz</Link>
                             </div>
 
                             {/* Mobile Stats Grid */}
