@@ -31,11 +31,13 @@ export default function Navbar({ user }: NavbarProps) {
         <nav className="glass sticky top-4 z-50 mx-4 sm:mx-8 rounded-3xl md:rounded-[2rem] border border-border-theme/40 mt-4 overflow-visible">
             <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                 {/* Logo Section */}
-                <Link href="/" className="flex items-center gap-3 md:gap-4 group shrink-0">
+                <Link href="/" className={cn("flex items-center gap-3 md:gap-4 group shrink-0 transition-universal")}>
                     <motion.div
                         whileHover={{ scale: 1.05, rotate: 5 }}
                         whileTap={{ scale: 0.95 }}
-                        className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl md:rounded-3xl border border-primary/20 shadow-2xl backdrop-blur-xl animate-logo-pulse flex items-center justify-center shrink-0"
+                        className={cn(
+                            "w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl md:rounded-3xl border border-primary/20 shadow-2xl backdrop-blur-xl animate-logo-pulse flex items-center justify-center shrink-0"
+                        )}
                     >
                         <Logo className="h-7 w-7 md:h-9 md:w-9" />
                     </motion.div>

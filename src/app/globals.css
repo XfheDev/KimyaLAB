@@ -57,6 +57,8 @@ html {
   scroll-behavior: smooth;
   /* Prevent zoom on double tap for touch devices */
   touch-action: manipulation;
+  /* Prevent content shift when scrollbar appears */
+  scrollbar-gutter: stable;
 }
 
 body {

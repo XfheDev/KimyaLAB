@@ -176,16 +176,18 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex flex-col xl:flex-row items-center gap-12 xl:gap-20">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-                className="relative hidden xl:block animate-float-molecule shrink-0"
-              >
-                <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[28rem] 2xl:w-[28rem]" />
-                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full -z-10 animate-pulse" />
-              </motion.div>
+            <div className="flex flex-col lg:flex-row items-center gap-12 xl:gap-20">
+              <div className="relative hidden lg:block w-0 xl:w-auto shrink-0 overflow-visible">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  className="animate-float-molecule hidden xl:block"
+                >
+                  <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[28rem] 2xl:w-[28rem]" />
+                  <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full -z-10 animate-pulse" />
+                </motion.div>
+              </div>
 
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
