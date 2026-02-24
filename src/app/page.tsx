@@ -152,16 +152,9 @@ export default function Dashboard() {
           <div className="absolute top-[40%] left-[50%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-ring" />
         </motion.div>
 
-        <Navbar user={user ? {
-          name: user.name,
-          level: user.level,
-          points: user.points,
-          streak: user.streak
-        } : {}} />
-
         <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12 relative z-10">
-          <header className="mb-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
-            <div className="w-full lg:max-w-2xl xl:max-w-3xl text-center lg:text-left">
+          <header className="mb-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 min-h-[300px] relative">
+            <div className="w-full lg:max-w-2xl xl:max-w-3xl text-center lg:text-left z-10">
               <motion.h1
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -176,16 +169,16 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex flex-col lg:flex-row items-center gap-12 xl:gap-20">
-              <div className="relative hidden lg:block w-0 xl:w-auto shrink-0 overflow-visible">
+            <div className="flex flex-col lg:flex-row items-center gap-12 xl:gap-20 relative">
+              {/* Decorative Logo - Absolute Positioned on LG+ to prevent flow shifts */}
+              <div className="hidden lg:block lg:absolute lg:left-[-200px] xl:left-[-350px] 2xl:left-[-450px] pointer-events-none opacity-50 xl:opacity-100 transition-opacity">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
-                  className="animate-float-molecule hidden xl:block"
+                  className="animate-float-molecule"
                 >
-                  <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[28rem] 2xl:w-[28rem]" />
-                  <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full -z-10 animate-pulse" />
+                  <Logo className="h-48 w-48 xl:h-80 xl:w-80 2xl:h-[28rem] 2xl:w-[28rem]" />
                 </motion.div>
               </div>
 
@@ -193,7 +186,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 justify-center lg:justify-start"
+                className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 justify-center lg:justify-start relative z-20"
               >
                 {[
                   { icon: <Award className="h-8 w-8 md:h-10 md:w-10" />, label: "Deneyim", val: user?.points || 0, color: "bg-accent/20 text-accent" }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { BookOpen, ArrowRight, Search } from "lucide-react";
 import SkeletonCard from "@/components/SkeletonCard";
@@ -109,8 +108,6 @@ export default function AcademyPage() {
 
     return (
         <div className="min-h-screen mesh-gradient text-foreground pb-24">
-            <Navbar user={user || {}} />
-
             <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12">
                 <header className="mb-20 flex flex-col lg:flex-row lg:items-end justify-between gap-16">
                     <div className="max-w-3xl">

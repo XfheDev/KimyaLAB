@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SessionProvider } from "@/components/Providers";
 import { AudioProvider } from "@/components/AudioProvider";
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -34,7 +35,14 @@ export default function RootLayout({
         >
           <SessionProvider>
             <AudioProvider>
-              {children}
+              <div className="flex flex-col min-h-screen">
+                <div className="h-24 md:h-28 relative z-[100] grid place-items-center">
+                  <Navbar />
+                </div>
+                <main className="flex-1">
+                  {children}
+                </main>
+              </div>
             </AudioProvider>
           </SessionProvider>
         </ThemeProvider>

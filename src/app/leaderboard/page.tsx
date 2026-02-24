@@ -1,24 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Leaderboard from "@/components/Leaderboard";
 import { Trophy, Star, Award } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LeaderboardPage() {
-    const [user, setUser] = useState<any>(null);
-
-    useEffect(() => {
-        fetch("/api/stats")
-            .then(res => res.json())
-            .then(data => setUser(data.user));
-    }, []);
-
     return (
         <div className="min-h-screen mesh-gradient text-foreground pb-24">
-            <Navbar user={user || {}} />
-
             <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12">
                 <header className="mb-20">
                     <div className="flex items-center gap-4 mb-8">

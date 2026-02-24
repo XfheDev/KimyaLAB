@@ -1,25 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import UserStats from "@/components/UserStats";
 import SmartFeedback from "@/components/SmartFeedback";
 import { Target, Zap, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AnalyticsPage() {
-    const [user, setUser] = useState<any>(null);
-
-    useEffect(() => {
-        fetch("/api/stats")
-            .then(res => res.json())
-            .then(data => setUser(data.user));
-    }, []);
-
     return (
         <div className="min-h-screen mesh-gradient text-foreground pb-24">
-            <Navbar user={user || {}} />
-
             <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12">
                 <header className="mb-24">
                     <div className="flex items-center gap-4 mb-10">

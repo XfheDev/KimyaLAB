@@ -1,26 +1,32 @@
-"use client";
-
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { BookOpen, LogOut, Award, Star, Settings, Menu, X, ChevronDown, UserCircle, Zap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Logo from "./Logo";
 
-interface NavbarProps {
-    user: {
-        name?: string | null;
-        level?: number;
-        points?: number;
-        streak?: number;
-    };
-}
-
-export default function Navbar({ user }: NavbarProps) {
+export default function Navbar() {
+    const { data: session } = useSession();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [stats, setStats] = useState<any>(null);
+
+    useEffect(() => {
+        if (session) {
+            fetch("/api/stats")
+                .then((res) => res.json())
+                .then((data) => setStats(data));
+        }
+    }, [session]);
+
+    const user = {
+        name: session?.user?.name,
+        level: stats?.level || 1,
+        points: stats?.points || 0,
+        streak: stats?.streak || 0
+    };
 
     // Energy calculation: level logic is points / 1000 + 1
     // Progress is the remainder of points / 1000
