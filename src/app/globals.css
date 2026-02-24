@@ -251,7 +251,11 @@ body {
 }
 
 .transition-universal {
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .active-tactile {

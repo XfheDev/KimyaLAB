@@ -1,10 +1,9 @@
-"use client";
-
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function Logo({ className = "h-8 w-8" }: { className?: string }) {
     return (
-        <div className={`relative ${className} group`}>
+        <div className={cn("relative shrink-0 flex items-center justify-center", className, "group")}>
             {/* Main Atom/Molecule Body */}
             <motion.svg
                 viewBox="0 0 100 100"

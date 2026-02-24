@@ -160,49 +160,52 @@ export default function Dashboard() {
         } : {}} />
 
         <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12 relative z-10">
-          <header className="mb-24 flex flex-col lg:flex-row lg:items-center justify-between gap-16">
-            <div className="max-w-3xl">
+          <header className="mb-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
+            <div className="w-full lg:max-w-2xl xl:max-w-3xl text-center lg:text-left">
               <motion.h1
-                initial={{ y: 40, opacity: 0 }}
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 className="text-5xl sm:text-7xl md:text-8xl 2xl:text-[9rem] font-black tracking-tighter leading-[0.9] mb-8"
               >
                 Geleceğin <br />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">Laboratuvarı</span>
               </motion.h1>
-              <p className="text-xl md:text-3xl text-foreground/50 font-medium leading-relaxed max-w-2xl px-2">
+              <p className="text-xl md:text-3xl text-foreground/50 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0 px-2">
                 Moleküler düzeyde öğrenme deneyimi. Bugün hangi elementi parçalayıp yeniden inşa edeceksin?
               </p>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 1 }}
-              className="relative hidden lg:block animate-float-molecule"
-            >
-              <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[32rem] 2xl:w-[32rem]" />
-              <div className="absolute inset-0 bg-primary/10 blur-[120px] rounded-full -z-10 animate-pulse" />
-            </motion.div>
+            <div className="flex flex-col xl:flex-row items-center gap-12 xl:gap-20">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="relative hidden xl:block animate-float-molecule shrink-0"
+              >
+                <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[28rem] 2xl:w-[28rem]" />
+                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full -z-10 animate-pulse" />
+              </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col sm:flex-row gap-8 w-full lg:w-auto"
-            >
-              {[
-                { icon: <Award className="h-8 w-8 md:h-10 md:w-10" />, label: "Deneyim", val: user?.points || 0, color: "bg-accent/20 text-accent" }
-              ].map((item, i) => (
-                <div key={i} className="glass-morphism p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] min-w-[200px] md:min-w-[240px] flex flex-col items-center justify-center group hover:scale-105 transition-universal shadow-2xl">
-                  <div className={`p-4 md:p-5 rounded-2xl md:rounded-3xl mb-4 md:mb-5 ${item.color} group-hover:rotate-12 transition-transform shadow-xl`}>
-                    {item.icon}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 justify-center lg:justify-start"
+              >
+                {[
+                  { icon: <Award className="h-8 w-8 md:h-10 md:w-10" />, label: "Deneyim", val: user?.points || 0, color: "bg-accent/20 text-accent" }
+                ].map((item, i) => (
+                  <div key={i} className="glass-morphism p-8 md:p-10 rounded-[3rem] min-w-[220px] md:min-w-[260px] flex flex-col items-center justify-center group hover:scale-105 active-tactile tap-highlight-none transition-universal shadow-2xl border-primary/20">
+                    <div className={`p-4 md:p-5 rounded-2xl md:rounded-3xl mb-4 md:mb-6 ${item.color} group-hover:rotate-12 transition-transform shadow-xl`}>
+                      {item.icon}
+                    </div>
+                    <p className="text-xs font-black text-foreground/30 uppercase tracking-[0.3em] mb-2">{item.label}</p>
+                    <p className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">{item.val}</p>
                   </div>
-                  <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em] mb-1 md:mb-2">{item.label}</p>
-                  <p className="text-4xl md:text-5xl font-black text-foreground">{item.val}</p>
-                </div>
-              ))}
-            </motion.div>
+                ))}
+              </motion.div>
+            </div>
           </header>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-12 mb-32">
