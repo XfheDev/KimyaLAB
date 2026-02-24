@@ -83,7 +83,7 @@ export default function SmartFeedback() {
             </div>
 
             <button
-                onClick={() => { playSFX('click'); window.location.href = '#topics'; }}
+                onClick={() => { playSFX('click'); window.location.href = '/academy'; }}
                 className="px-12 py-8 bg-foreground text-background dark:bg-white dark:text-black rounded-[2.5rem] font-black hover:opacity-90 hover:scale-105 active:scale-95 transition-universal shadow-2xl whitespace-nowrap flex items-center gap-4 group/btn text-xl"
             >
                 Deneye Başla

@@ -25,7 +25,7 @@ export default async function QuizPage({
     // Pick 10 random questions or more if available
     const questions = (subject.questions as any[])
         .sort(() => 0.5 - Math.random())
-        .slice(0, 10)
+        .slice(0, 20)
         .map((q: any) => ({
             ...q,
             options: JSON.parse(q.options),
