@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Logo from "./Logo";
 
 interface NavbarProps {
     user: {
@@ -34,9 +35,9 @@ export default function Navbar({ user }: NavbarProps) {
                     <motion.div
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-2 md:p-2.5 bg-gradient-to-br from-primary to-secondary rounded-xl md:rounded-2xl shadow-lg shadow-primary/25"
+                        className="p-1 md:p-1.5 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl md:rounded-3xl border border-primary/20 shadow-2xl backdrop-blur-xl animate-logo-pulse"
                     >
-                        <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                        <Logo className="h-7 w-7 md:h-9 md:w-9" />
                     </motion.div>
                     <span className="text-xl md:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary group-hover:opacity-80 transition-opacity">
                         KimyaLAB

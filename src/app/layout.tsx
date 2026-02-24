@@ -8,8 +8,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Efe Çağan | Geleceğin Kimya Platformu",
-  description: "Modern ve akıllı kimya öğrenme platformu.",
+  title: "KimyaLAB | Moleküler Öğrenme Deneyimi",
+  description: "Yapay zeka destekli, ultra-modern kimya eğitim platformu.",
 };
 
 import { ThemeProvider } from "@/components/ThemeProvider";

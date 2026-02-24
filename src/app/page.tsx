@@ -8,6 +8,7 @@ import UserStats from "@/components/UserStats";
 import DailyQuestion from "@/components/DailyQuestion";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { useAudio } from "@/components/AudioProvider";
+import Logo from "@/components/Logo";
 
 function Atom({ className, scale = 1, delay = 0, level = 1 }: { className?: string, scale?: number, delay?: number, level?: number }) {
   const orbitDuration = Math.max(2, 12 - (level * 0.5));
@@ -174,6 +175,16 @@ export default function Dashboard() {
                 Moleküler düzeyde öğrenme deneyimi. Bugün hangi elementi parçalayıp yeniden inşa edeceksin?
               </p>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="relative hidden lg:block animate-float-molecule"
+            >
+              <Logo className="h-64 w-64 md:h-80 md:w-80 2xl:h-[32rem] 2xl:w-[32rem]" />
+              <div className="absolute inset-0 bg-primary/10 blur-[120px] rounded-full -z-10 animate-pulse" />
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
