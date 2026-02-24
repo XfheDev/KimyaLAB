@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Trophy, ArrowLeft, RefreshCcw, Zap, AlertTriangle } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft, Flag, Check, X, Sparkles, Trophy, ArrowLeft, RefreshCcw, Zap, AlertTriangle, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
@@ -53,12 +53,30 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
 
     const stats = useMemo(() => {
         let correct = 0;
+        const wrongQuestions: string[] = [];
         questions.forEach((q, idx) => {
-            if (answers[idx] === q.correctOption) correct++;
+            if (answers[idx] === q.correctOption) {
+                correct++;
+            } else if (answers[idx] !== undefined) {
+                wrongQuestions.push(q.text);
+            }
         });
         const total = questions.length;
         const score = Math.round((correct / total) * 100);
-        return { correct, total, wrong: total - correct, score };
+
+        // Analysis logic
+        let analysis = "";
+        if (score === 100) {
+            analysis = "Olağanüstü! Tüm moleküler bağlar kusursuz. Bu konunun mutlak hakimisin.";
+        } else if (score >= 80) {
+            analysis = "Harika bir performans. Birkaç ufak sapma dışında teorik altyapın çok sağlam.";
+        } else if (score >= 50) {
+            analysis = "Stabil bir sonuç. Bazı temel kavramlarda kararsızlıklar var, üzerinden geçmekte fayda var.";
+        } else {
+            analysis = "Reaksiyon dengesi bozulmuş görünüyor. Temel kavramları tekrar inceleyip yeniden denemeni öneririm.";
+        }
+
+        return { correct, total, wrong: total - correct, score, wrongQuestions, analysis };
     }, [answers, questions]);
 
     const handleSelect = (optIdx: number) => {
@@ -185,13 +203,26 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                     <div className="bg-foreground/5 rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-16 border border-border-theme/40 relative group overflow-hidden mb-12 md:mb-16 shadow-inner">
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                         <div className="relative z-10">
-                            <div className="flex items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
-                                <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-primary animate-pulse" />
-                                <span className="font-black text-foreground/40 uppercase tracking-[0.4em] text-[10px] md:text-sm">Kozmik Tecrübe Kazancı</span>
-                            </div>
-                            <div className="flex items-baseline justify-center gap-3 md:gap-4">
-                                <span className="text-6xl md:text-8xl font-black text-primary text-glow">+{result?.pointsEarned || 0}</span>
-                                <span className="text-2xl md:text-4xl font-black text-secondary">XP</span>
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-center lg:justify-start gap-3 md:gap-4 mb-4 md:mb-6">
+                                        <Bot className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                                        <span className="font-black text-foreground/40 uppercase tracking-[0.4em] text-[10px] md:text-sm">Moleküler Teşhis</span>
+                                    </div>
+                                    <p className="text-xl md:text-3xl font-bold text-foreground/80 leading-relaxed text-center lg:text-left italic">
+                                        "{stats.analysis}"
+                                    </p>
+                                </div>
+                                <div className="shrink-0 flex items-center gap-6">
+                                    <div className="h-20 w-px bg-border-theme/40 hidden lg:block" />
+                                    <div className="text-center lg:text-right">
+                                        <div className="flex items-baseline justify-center lg:justify-end gap-2 mb-1">
+                                            <span className="text-5xl md:text-7xl font-black text-primary text-glow">+{result?.pointsEarned || 0}</span>
+                                            <span className="text-xl font-black text-secondary">XP</span>
+                                        </div>
+                                        <p className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em]">Verim Artışı</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
