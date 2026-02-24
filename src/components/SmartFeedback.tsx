@@ -84,10 +84,10 @@ export default function SmartFeedback() {
 
             <button
                 onClick={() => { playSFX('click'); window.location.href = '/academy'; }}
-                className="px-12 py-8 bg-foreground text-background dark:bg-white dark:text-black rounded-[2.5rem] font-black hover:opacity-90 hover:scale-105 active:scale-95 transition-universal shadow-2xl whitespace-nowrap flex items-center gap-4 group/btn text-xl"
+                className="px-14 py-10 bg-foreground text-background dark:bg-white dark:text-black rounded-[3rem] font-black hover:opacity-90 hover:scale-105 active-tactile tap-highlight-none transition-universal shadow-2xl whitespace-nowrap flex items-center gap-6 group/btn text-2xl"
             >
                 Deneye Başla
-                <Lightbulb className="h-8 w-8 group-hover/btn:fill-current transition-all" />
+                <Lightbulb className="h-10 w-10 group-hover/btn:fill-current transition-all" />
             </button>
         </motion.div>
     );

@@ -164,13 +164,13 @@ export default function Navbar({ user }: NavbarProps) {
                 </div>
 
                 {/* Mobile Icons */}
-                <div className="flex items-center gap-1 md:gap-2 lg:hidden">
+                <div className="flex items-center gap-3 lg:hidden">
                     <ThemeToggle />
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="p-2.5 md:p-3 bg-foreground/5 text-foreground rounded-xl md:rounded-2xl active:scale-90 transition-all border border-border-theme"
+                        className="p-4 md:p-5 bg-foreground/5 text-foreground rounded-2xl md:rounded-3xl active-tactile tap-highlight-none transition-all border border-border-theme shadow-xl"
                     >
-                        {isMenuOpen ? <X className="h-5 w-5 md:h-6 md:w-6" /> : <Menu className="h-5 w-5 md:h-6 md:w-6" />}
+                        {isMenuOpen ? <X className="h-6 w-6 md:h-8 md:w-8" /> : <Menu className="h-6 w-6 md:h-8 md:w-8" />}
                     </button>
                 </div>
             </div>

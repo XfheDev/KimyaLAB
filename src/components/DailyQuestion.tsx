@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight, Zap, Target, BookOpen, Trophy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { useAudio } from "@/components/AudioProvider";
+import { cn } from "@/lib/utils";
 
 export default function DailyQuestion() {
     const [question, setQuestion] = useState<any>(null);
     const [selected, setSelected] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [loading, setLoading] = useState(true);
+    const { playSFX } = useAudio();
 
     useEffect(() => {
         fetch("/api/daily")
@@ -66,7 +69,7 @@ export default function DailyQuestion() {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-morphism rounded-[2.5rem] md:rounded-[3rem] p-6 md:p-12 border-none shadow-2xl shadow-primary/10 relative overflow-hidden group"
+            className="glass-morphism rounded-[3rem] md:rounded-[4rem] p-8 md:p-14 border-none shadow-2xl shadow-primary/10 relative overflow-hidden group active-tactile tap-highlight-none"
         >
             {/* Background Decorations */}
             <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity duration-700">
@@ -101,23 +104,23 @@ export default function DailyQuestion() {
                                 key={idx}
                                 onClick={() => handleSelect(idx)}
                                 disabled={showResult}
-                                className={`p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left transition-all duration-300 border-2 font-bold flex items-center justify-between group/opt relative overflow-hidden ${showResult
+                                className={`p-8 md:p-12 2xl:p-14 rounded-[2.5rem] md:rounded-[3.5rem] text-left transition-universal border-2 md:border-4 font-black flex items-center justify-between group/opt relative overflow-hidden active-tactile tap-highlight-none ${showResult
                                     ? isCorrect
-                                        ? "bg-success/20 border-success text-success shadow-lg shadow-success/10"
+                                        ? "bg-success/20 border-success text-success shadow-2xl shadow-success/20"
                                         : isSelected
-                                            ? "bg-danger/20 border-danger text-danger shadow-lg shadow-danger/10"
+                                            ? "bg-danger/20 border-danger text-danger shadow-2xl shadow-danger/20"
                                             : "bg-foreground/5 border-transparent opacity-40"
-                                    : "bg-foreground/5 border-transparent hover:border-primary/40 hover:bg-foreground/10 hover:shadow-xl hover:-translate-y-1"
+                                    : "bg-foreground/5 border-transparent hover:border-primary/40 hover:bg-foreground/10 hover:shadow-2xl hover:-translate-y-1 shadow-lg"
                                     }`}
                             >
-                                <span className="text-lg md:text-2xl relative z-10">{option}</span>
+                                <span className="text-xl md:text-4xl relative z-10 leading-tight">{option}</span>
                                 {showResult && isCorrect && (
                                     <motion.div
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
                                         className="relative z-10"
                                     >
-                                        <CheckCircle2 className="h-8 w-8 text-success" />
+                                        <CheckCircle2 className="h-10 w-10 md:h-14 md:w-14 text-success" />
                                     </motion.div>
                                 )}
                             </button>
@@ -144,12 +147,12 @@ export default function DailyQuestion() {
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-xl md:text-2xl font-black text-foreground mb-1">
+                                    <p className="text-2xl md:text-4xl font-black text-foreground mb-2">
                                         {selected === question.correctOption
                                             ? "Teknik Deha!"
                                             : "Hatalı Bağ!"}
                                     </p>
-                                    <p className="text-xs md:text-base text-foreground/50 font-bold">
+                                    <p className="text-sm md:text-xl text-foreground/50 font-bold leading-tight">
                                         {selected === question.correctOption
                                             ? "XP kazandın!"
                                             : "Doğru cevap şuydu: " + question.options[question.correctOption]}
@@ -163,10 +166,10 @@ export default function DailyQuestion() {
                                     <span className="text-lg md:text-xl font-black text-primary">+50 XP</span>
                                 </div>
                                 <button
-                                    onClick={() => document.getElementById('topics')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="p-4 md:p-6 bg-foreground text-background dark:bg-white dark:text-black rounded-xl md:rounded-2xl font-black hover:scale-105 active:scale-95 transition-all shadow-xl flex-1 lg:flex-none flex items-center justify-center"
+                                    onClick={() => { playSFX('click'); window.location.href = '/academy'; }}
+                                    className="p-6 md:p-8 bg-foreground text-background dark:bg-white dark:text-black rounded-2xl md:rounded-3xl font-black hover:scale-105 active-tactile tap-highlight-none transition-universal shadow-2xl flex-1 lg:flex-none flex items-center justify-center"
                                 >
-                                    <ArrowRight className="h-6 w-6" />
+                                    <ArrowRight className="h-8 w-8 md:h-10 md:w-10" />
                                 </button>
                             </div>
                         </motion.div>

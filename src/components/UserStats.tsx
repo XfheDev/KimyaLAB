@@ -68,15 +68,15 @@ export default function UserStats() {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="flex items-center justify-between p-3 md:p-4 bg-foreground/5 rounded-2xl border border-border-theme hover:border-primary/30 transition-colors"
+                                    className="flex items-center justify-between p-5 md:p-6 2xl:p-8 bg-foreground/5 rounded-[2rem] border border-border-theme hover:border-primary/30 transition-universal active-tactile tap-highlight-none"
                                 >
-                                    <div className="flex-1 min-w-0 pr-4">
-                                        <p className="font-bold text-foreground text-sm md:text-base truncate">{attempt.subject?.name || "Konu"}</p>
-                                        <p className="text-[10px] md:text-xs text-foreground/40 font-medium">{new Date(attempt.date).toLocaleDateString("tr-TR")}</p>
+                                    <div className="flex-1 min-w-0 pr-6 md:pr-10">
+                                        <p className="font-black text-foreground text-lg md:text-2xl truncate mb-1">{attempt.subject?.name || "Konu"}</p>
+                                        <p className="text-xs md:text-sm text-foreground/40 font-black uppercase tracking-widest">{new Date(attempt.date).toLocaleDateString("tr-TR")}</p>
                                     </div>
                                     <div className="text-right shrink-0">
-                                        <p className="text-lg md:text-xl font-black text-primary">%{attempt.score}</p>
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-foreground/30">{attempt.correct}D • {attempt.wrong}Y</p>
+                                        <p className="text-2xl md:text-4xl font-black text-primary tracking-tighter">%{attempt.score}</p>
+                                        <p className="text-[10px] md:text-xs font-black uppercase text-foreground/30 tracking-widest mt-1">{attempt.correct}D • {attempt.wrong}Y</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -142,15 +142,15 @@ function StatCard({ icon, label, value, color, index }: any) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="glass p-4 md:p-6 rounded-[2rem] md:rounded-3xl border-none shadow-xl shadow-primary/5 flex items-center gap-4 md:gap-5 relative overflow-hidden group"
+            className="glass-morphism p-6 md:p-10 2xl:p-12 rounded-[3rem] border-none shadow-2xl shadow-primary/5 flex items-center gap-6 md:gap-8 relative overflow-hidden group active-tactile tap-highlight-none"
         >
-            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className={cn("p-3 md:p-4 rounded-xl md:rounded-2xl shadow-lg", color)}>
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className={cn("p-5 md:p-7 rounded-2xl md:rounded-[2rem] shadow-2xl", color)}>
                 {icon}
             </div>
             <div>
-                <p className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">{label}</p>
-                <p className="text-xl md:text-2xl font-black text-foreground">{value}</p>
+                <p className="text-xs md:text-sm font-black text-foreground/40 uppercase tracking-[0.2em] mb-1">{label}</p>
+                <p className="text-3xl md:text-5xl font-black text-foreground tracking-tight">{value}</p>
             </div>
         </motion.div>
     );

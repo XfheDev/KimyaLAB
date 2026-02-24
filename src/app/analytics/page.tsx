@@ -21,13 +21,13 @@ export default function AnalyticsPage() {
             <Navbar user={user || {}} />
 
             <main className="max-w-7xl mx-auto py-12 px-6 lg:px-12">
-                <header className="mb-20">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="h-2 w-24 bg-gradient-to-r from-primary via-secondary to-accent rounded-full" />
-                        <h2 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Kuantum Veriler</h2>
+                <header className="mb-24">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="h-2 w-32 bg-gradient-to-r from-primary via-secondary to-accent rounded-full" />
+                        <h2 className="text-sm font-black uppercase tracking-[0.5em] text-primary">Kuantum Veriler</h2>
                     </div>
-                    <h2 className="text-4xl md:text-7xl font-black mb-6 leading-tight">Moleküler Analiz</h2>
-                    <p className="text-lg md:text-2xl text-foreground/40 font-medium max-w-xl">Öğrenme sürecini verilerle optimize et ve eksiklerini keşfet.</p>
+                    <h2 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">Moleküler <br /> Analiz</h2>
+                    <p className="text-xl md:text-3xl text-foreground/40 font-medium max-w-2xl">Öğrenme sürecini verilerle optimize et ve eksiklerini keşfet.</p>
                 </header>
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">

@@ -165,12 +165,12 @@ export default function Dashboard() {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tight leading-[0.95] mb-8"
+                className="text-5xl sm:text-7xl md:text-8xl 2xl:text-[9rem] font-black tracking-tighter leading-[0.9] mb-8"
               >
                 Geleceğin <br />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">Laboratuvarı</span>
               </motion.h1>
-              <p className="text-lg md:text-2xl text-foreground/50 font-medium leading-relaxed max-w-2xl px-2">
+              <p className="text-xl md:text-3xl text-foreground/50 font-medium leading-relaxed max-w-2xl px-2">
                 Moleküler düzeyde öğrenme deneyimi. Bugün hangi elementi parçalayıp yeniden inşa edeceksin?
               </p>
             </div>
@@ -203,31 +203,31 @@ export default function Dashboard() {
             >
               <DailyQuestion />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <Link href="/academy">
-                  <div className="glass-morphism p-10 rounded-[3rem] border border-primary/20 hover:border-primary transition-all group relative overflow-hidden h-full">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                      <BookOpen className="h-24 w-24" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                <Link href="/academy" className="active-tactile tap-highlight-none">
+                  <div className="glass-morphism p-12 rounded-[4rem] border border-primary/20 hover:border-primary transition-all group relative overflow-hidden h-full shadow-2xl">
+                    <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <BookOpen className="h-32 w-32" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">Eğitim Merkezi</p>
-                    <h3 className="text-3xl font-black mb-4">Akademi</h3>
-                    <p className="text-foreground/40 text-sm leading-relaxed mb-8">Tüm kimya modüllerine buradan ulaşabilir ve deneylerine devam edebilirsin.</p>
-                    <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest">
-                      Keşfetmeye Başla <ArrowRight className="h-4 w-4" />
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6">Eğitim Merkezi</p>
+                    <h3 className="text-4xl font-black mb-6">Akademi</h3>
+                    <p className="text-foreground/40 text-lg leading-relaxed mb-10">Tüm kimya modüllerine buradan ulaşabilir ve deneylerine devam edebilirsin.</p>
+                    <div className="flex items-center gap-3 text-primary font-black text-sm uppercase tracking-widest">
+                      Keşfetmeye Başla <ArrowRight className="h-5 w-5" />
                     </div>
                   </div>
                 </Link>
 
-                <Link href="/analytics">
-                  <div className="glass-morphism p-10 rounded-[3rem] border border-secondary/20 hover:border-secondary transition-all group relative overflow-hidden h-full">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                      <Zap className="h-24 w-24" />
+                <Link href="/analytics" className="active-tactile tap-highlight-none">
+                  <div className="glass-morphism p-12 rounded-[4rem] border border-secondary/20 hover:border-secondary transition-all group relative overflow-hidden h-full shadow-2xl">
+                    <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Zap className="h-32 w-32" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-4">Kişisel Gelişim</p>
-                    <h3 className="text-3xl font-black mb-4">Analiz</h3>
-                    <p className="text-foreground/40 text-sm leading-relaxed mb-8">Hangi konularda daha güçlü olduğunu ve moleküler eksiklerini gör.</p>
-                    <div className="flex items-center gap-2 text-secondary font-black text-xs uppercase tracking-widest">
-                      Verileri İncele <ArrowRight className="h-4 w-4" />
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-secondary mb-6">Kişisel Gelişim</p>
+                    <h3 className="text-4xl font-black mb-6">Analiz</h3>
+                    <p className="text-foreground/40 text-lg leading-relaxed mb-10">Hangi konularda daha güçlü olduğunu ve moleküler eksiklerini gör.</p>
+                    <div className="flex items-center gap-3 text-secondary font-black text-sm uppercase tracking-widest">
+                      Verileri İncele <ArrowRight className="h-5 w-5" />
                     </div>
                   </div>
                 </Link>

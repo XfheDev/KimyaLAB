@@ -47,10 +47,16 @@
   --color-border-theme: var(--border);
   --font-sans: var(--font-outfit);
   --font-mono: ui-mono, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Touch Board Specific */
+  --touch-target-size: 4rem;
+  --touch-padding: 1.5rem;
 }
 
 html {
   scroll-behavior: smooth;
+  /* Prevent zoom on double tap for touch devices */
+  touch-action: manipulation;
 }
 
 body {
@@ -60,6 +66,14 @@ body {
   transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Better text scale for boards */
+  font-size: 16px;
+}
+
+@media (min-width: 1920px) {
+  body {
+    font-size: 18px;
+  }
 }
 
 /* Glassmorphism Variants */
@@ -192,6 +206,18 @@ body {
 
 .transition-universal {
   transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.active-tactile {
+  transition: transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.active-tactile:active {
+  transform: scale(0.96);
+}
+
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {

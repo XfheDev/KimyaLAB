@@ -419,7 +419,7 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                             </motion.p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12">
                             {currentQuestion.options.map((option, idx) => {
                                 const isSelected = answers[currentIdx] === idx;
                                 return (
@@ -430,14 +430,14 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                         transition={{ delay: 0.4 + idx * 0.1 }}
                                         onClick={() => handleSelect(idx)}
                                         className={cn(
-                                            "w-full text-left p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border-2 md:border-4 transition-universal flex items-center group relative overflow-hidden",
+                                            "w-full text-left p-8 md:p-12 2xl:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-2 md:border-4 transition-universal flex items-center group relative overflow-hidden active-tactile tap-highlight-none",
                                             isSelected
                                                 ? "border-primary bg-primary/20 shadow-2xl shadow-primary/20 scale-[1.02]"
-                                                : "border-border-theme/40 hover:border-primary/40 hover:bg-white/5"
+                                                : "border-border-theme/40 hover:border-primary/40 hover:bg-white/5 shadow-lg"
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[1.5rem] flex items-center justify-center font-black mr-4 md:mr-8 transition-universal shadow-2xl grow-0 shrink-0 text-lg md:text-2xl",
+                                            "w-12 h-12 md:w-20 md:h-20 2xl:w-24 2xl:h-24 rounded-2xl md:rounded-[2rem] flex items-center justify-center font-black mr-6 md:mr-10 transition-universal shadow-2xl grow-0 shrink-0 text-xl md:text-4xl",
                                             isSelected
                                                 ? "bg-primary text-white scale-110 rotate-6 shadow-primary/40"
                                                 : "bg-foreground/5 text-foreground/40 group-hover:bg-primary/20 group-hover:text-primary group-hover:rotate-12"
@@ -445,15 +445,15 @@ export default function QuizSession({ questions, subjectId, subjectName }: Props
                                             {String.fromCharCode(65 + idx)}
                                         </div>
                                         <span className={cn(
-                                            "text-lg md:text-3xl font-black transition-colors flex-1",
-                                            isSelected ? "text-foreground" : "text-foreground/60"
+                                            "text-xl md:text-4xl font-black transition-colors flex-1",
+                                            isSelected ? "text-foreground" : "text-foreground/70"
                                         )}>
                                             {option}
                                         </span>
                                         {isSelected && (
                                             <motion.div
                                                 layoutId="active-particle"
-                                                className="absolute right-6 md:right-10 h-4 w-4 md:h-6 md:w-6 rounded-full bg-primary aura-primary shadow-[0_0_20px_var(--primary)]"
+                                                className="absolute right-8 md:right-12 h-6 w-6 md:h-8 md:w-8 rounded-full bg-primary aura-primary shadow-[0_0_30px_var(--primary)]"
                                             />
                                         )}
                                     </motion.button>
